@@ -256,7 +256,7 @@ export const SinglePageForm = () => {
               className="h-20 w-auto"
             />
           </div>
-          <p className="text-lg text-gray-600 mb-4">Questionário de Pesquisa Agropecuária</p>
+          <p className="text-lg text-gray-600 mb-4">Questionário de Pesquisa</p>
           <div className="w-32 h-1 bg-green-600 mx-auto rounded-full"></div>
         </div>
 
@@ -556,9 +556,9 @@ export const SinglePageForm = () => {
                       <Input
                         id="logradouro"
                         value={formData.logradouro}
-                        readOnly
+                        onChange={(e) => updateFormData('logradouro', e.target.value)}
                         placeholder="Rua, Avenida, etc."
-                        className="h-12 text-base border-gray-300 bg-gray-100 text-gray-600 cursor-not-allowed"
+                        className="h-12 text-base border-gray-300"
                       />
                       {errors.logradouro && (
                         <p className="text-red-600 text-sm flex items-center gap-2 mt-1">
@@ -596,9 +596,9 @@ export const SinglePageForm = () => {
                       <Input
                         id="bairro"
                         value={formData.bairro}
-                        readOnly
+                        onChange={(e) => updateFormData('bairro', e.target.value)}
                         placeholder="Nome do bairro"
-                        className="h-12 text-base border-gray-300 bg-gray-100 text-gray-600 cursor-not-allowed"
+                        className="h-12 text-base border-gray-300"
                       />
                       {errors.bairro && (
                         <p className="text-red-600 text-sm flex items-center gap-2 mt-1">
