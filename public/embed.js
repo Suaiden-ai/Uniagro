@@ -20,7 +20,7 @@
     const EMBED_CONFIG = {
         baseUrl: detectBaseUrl(),
         defaultWidth: '100%',
-        defaultHeight: '600px',
+        defaultHeight: '800px', // Altura inicial maior
         className: 'uniagro-embed'
     };
 
@@ -47,6 +47,8 @@
         iframe.style.borderRadius = '8px';
         iframe.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
         iframe.style.maxWidth = '100%';
+        iframe.style.overflow = 'hidden'; // Evitar scroll duplo
+        iframe.style.minHeight = '600px'; // Altura mínima garantida
         
         // Atributos de segurança e acessibilidade
         iframe.setAttribute('allowfullscreen', 'true');
@@ -54,6 +56,7 @@
         iframe.setAttribute('loading', 'lazy');
         iframe.setAttribute('title', 'Questionário Uniagro');
         iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
+        iframe.setAttribute('scrolling', 'no'); // Desabilitar scroll do iframe completamente
 
         container.appendChild(iframe);
         return iframe;
@@ -61,13 +64,49 @@
 
     // Função para redimensionar automaticamente o iframe
     function setupAutoResize(iframe) {
-        window.addEventListener('message', function(event) {
+        let lastHeight = 0;
+        let resizeTimeout = null;
+        const minHeight = 500;
+        const maxHeight = 3000;
+        
+        const messageHandler = function(event) {
             // Verificar origem por segurança
             if (event.origin !== EMBED_CONFIG.baseUrl) return;
             
             if (event.data.type === 'uniagro-resize' && event.data.height) {
-                iframe.style.height = event.data.height + 'px';
+                let newHeight = Math.min(Math.max(event.data.height, minHeight), maxHeight);
+                
+                // Adicionar uma margem extra para evitar scroll
+                newHeight += 50;
+                
+                // Evitar mudanças muito pequenas
+                if (Math.abs(newHeight - lastHeight) < 30) return;
+                
+                // Debounce
+                if (resizeTimeout) clearTimeout(resizeTimeout);
+                
+                resizeTimeout = setTimeout(() => {
+                    iframe.style.height = newHeight + 'px';
+                    iframe.style.minHeight = newHeight + 'px';
+                    lastHeight = newHeight;
+                    
+                    // Log para debug
+                    console.log('📏 Iframe redimensionado para:', newHeight + 'px');
+                }, 300);
             }
+        };
+
+        window.addEventListener('message', messageHandler);
+        
+        // Teste inicial de comunicação
+        setTimeout(() => {
+            iframe.contentWindow?.postMessage({ type: 'uniagro-request-size' }, EMBED_CONFIG.baseUrl);
+        }, 2000);
+        
+        // Cleanup function
+        iframe.addEventListener('unload', function() {
+            window.removeEventListener('message', messageHandler);
+            if (resizeTimeout) clearTimeout(resizeTimeout);
         });
     }
 
