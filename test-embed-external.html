@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste do Embed Uniagro - Site Externo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #718096;
+            margin: 0;
+        }
+        
+        .embed-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .embed-title {
+            color: #2d3748;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+        
+        .status.loading {
+            background: #fef5e7;
+            border: 1px solid #f6cc50;
+            color: #92400e;
+        }
+        
+        .status.success {
+            background: #f0fff4;
+            border: 1px solid #68d391;
+            color: #22543d;
+        }
+        
+        .status.error {
+            background: #fed7d7;
+            border: 1px solid #f56565;
+            color: #c53030;
+        }
+        
+        .code-example {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #2d3748;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧪 Teste do Sistema de Embed Uniagro</h1>
+        <p>Testando o embed do questionário em site externo</p>
+    </div>
+
+    <!-- Método 1: Auto-inicialização -->
+    <div class="embed-section">
+        <h2 class="embed-title">📋 Método 1: Auto-inicialização</h2>
+        <div class="status loading" id="status1">⏳ Carregando embed...</div>
+        
+        <div class="code-example">
+&lt;div data-uniagro-embed 
+     data-width="100%" 
+     data-height="600px"
+     data-auto-resize="true"&gt;
+&lt;/div&gt;
+        </div>
+        
+        <div id="embed1" 
+             data-uniagro-embed 
+             data-width="100%" 
+             data-height="600px"
+             data-auto-resize="true">
+        </div>
+    </div>
+
+    <!-- Método 2: JavaScript Manual -->
+    <div class="embed-section">
+        <h2 class="embed-title">⚙️ Método 2: JavaScript Manual</h2>
+        <div class="status loading" id="status2">⏳ Carregando embed...</div>
+        
+        <div class="code-example">
+&lt;div id="questionario-manual"&gt;&lt;/div&gt;
+&lt;script&gt;
+    UniAgroEmbed.create('questionario-manual', {
+        width: '100%',
+        height: '500px',
+        autoResize: true
+    });
+&lt;/script&gt;
+        </div>
+        
+        <div id="questionario-manual"></div>
+    </div>
+
+    <!-- Método 3: Responsivo -->
+    <div class="embed-section">
+        <h2 class="embed-title">📱 Método 3: Responsivo Personalizado</h2>
+        <div class="status loading" id="status3">⏳ Carregando embed...</div>
+        
+        <div class="code-example">
+&lt;div data-uniagro-embed 
+     data-width="100%" 
+     data-height="400px"
+     data-auto-resize="false"&gt;
+&lt;/div&gt;
+        </div>
+        
+        <div id="embed3" 
+             data-uniagro-embed 
+             data-width="100%" 
+             data-height="400px"
+             data-auto-resize="false">
+        </div>
+    </div>
+
+    <!-- Script do Uniagro Embed -->
+    <script src="https://lovely-biscochitos-423038.netlify.app/embed.js"></script>
+    
+    <script>
+        console.log('🌱 Iniciando teste do Uniagro Embed...');
+        
+        // Configurações de teste
+        let embedsCarregados = 0;
+        const totalEmbeds = 3;
+
+        // Verificar se o UniAgroEmbed foi carregado
+        function verificarScript() {
+            if (typeof UniAgroEmbed !== 'undefined') {
+                console.log('✅ UniAgroEmbed carregado com sucesso!');
+                console.log('📋 Configuração atual:', UniAgroEmbed.getConfig());
+                
+                // Configurar base URL
+                UniAgroEmbed.setBaseUrl('https://lovely-biscochitos-423038.netlify.app');
+                
+                inicializarEmbedsManualmente();
+            } else {
+                console.log('❌ UniAgroEmbed não foi carregado');
+                document.getElementById('status1').innerHTML = '❌ Erro ao carregar script';
+                document.getElementById('status1').className = 'status error';
+            }
+        }
+
+        function inicializarEmbedsManualmente() {
+            try {
+                // Método 2: JavaScript Manual
+                console.log('🔧 Criando embed manual...');
+                const iframe2 = UniAgroEmbed.create('questionario-manual', {
+                    width: '100%',
+                    height: '500px',
+                    autoResize: true
+                });
+
+                if (iframe2) {
+                    iframe2.onload = function() {
+                        console.log('✅ Embed manual carregado');
+                        document.getElementById('status2').innerHTML = '✅ Embed carregado com sucesso!';
+                        document.getElementById('status2').className = 'status success';
+                        verificarCarregamentoCompleto();
+                    };
+
+                    iframe2.onerror = function() {
+                        console.log('❌ Erro ao carregar embed manual');
+                        document.getElementById('status2').innerHTML = '❌ Erro ao carregar embed';
+                        document.getElementById('status2').className = 'status error';
+                    };
+                } else {
+                    document.getElementById('status2').innerHTML = '❌ Falha ao criar embed';
+                    document.getElementById('status2').className = 'status error';
+                }
+
+            } catch (error) {
+                console.error('❌ Erro ao inicializar embeds:', error);
+                document.getElementById('status2').innerHTML = '❌ Erro: ' + error.message;
+                document.getElementById('status2').className = 'status error';
+            }
+        }
+
+        function verificarCarregamentoCompleto() {
+            embedsCarregados++;
+            if (embedsCarregados >= totalEmbeds) {
+                console.log('🎉 Todos os embeds foram carregados!');
+            }
+        }
+
+        // Verificar embeds automáticos
+        function verificarEmbedsAutomaticos() {
+            setTimeout(() => {
+                const embeds = document.querySelectorAll('[data-uniagro-embed]');
+                console.log(`📊 Encontrados ${embeds.length} embeds automáticos`);
+
+                embeds.forEach((embed, index) => {
+                    const iframe = embed.querySelector('iframe');
+                    const statusId = `status${index + 1}`;
+                    
+                    if (iframe) {
+                        console.log(`✅ Embed ${index + 1} inicializado`);
+                        
+                        iframe.onload = function() {
+                            console.log(`✅ Embed ${index + 1} carregado`);
+                            const statusEl = document.getElementById(statusId);
+                            if (statusEl) {
+                                statusEl.innerHTML = '✅ Embed carregado com sucesso!';
+                                statusEl.className = 'status success';
+                            }
+                            verificarCarregamentoCompleto();
+                        };
+
+                        iframe.onerror = function() {
+                            console.log(`❌ Erro no embed ${index + 1}`);
+                            const statusEl = document.getElementById(statusId);
+                            if (statusEl) {
+                                statusEl.innerHTML = '❌ Erro ao carregar embed';
+                                statusEl.className = 'status error';
+                            }
+                        };
+                    } else {
+                        console.log(`❌ Iframe não encontrado no embed ${index + 1}`);
+                        const statusEl = document.getElementById(statusId);
+                        if (statusEl) {
+                            statusEl.innerHTML = '❌ Iframe não criado';
+                            statusEl.className = 'status error';
+                        }
+                    }
+                });
+            }, 2000);
+        }
+
+        // Aguardar carregamento da página
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📄 DOM carregado');
+            setTimeout(verificarScript, 1000);
+            verificarEmbedsAutomaticos();
+        });
+
+        // Logs de debug
+        window.addEventListener('message', function(event) {
+            console.log('📨 Mensagem recebida:', event.data, 'de:', event.origin);
+        });
+
+        // Teste de conectividade
+        console.log('🌐 Testando conectividade com:', 'https://lovely-biscochitos-423038.netlify.app/embed.js');
+    </script>
+</body>
+</html>

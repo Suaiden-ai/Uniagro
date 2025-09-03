@@ -1,9 +1,24 @@
 (function() {
     'use strict';
     
+    // Detectar a URL base do script
+    function detectBaseUrl() {
+        // Tentar detectar a URL do script atual
+        const scripts = document.getElementsByTagName('script');
+        for (let i = scripts.length - 1; i >= 0; i--) {
+            const src = scripts[i].src;
+            if (src && src.includes('embed.js')) {
+                const url = new URL(src);
+                return `${url.protocol}//${url.host}`;
+            }
+        }
+        // Fallback para URL conhecida
+        return 'https://lovely-biscochitos-423038.netlify.app';
+    }
+    
     // Configurações do embed
     const EMBED_CONFIG = {
-        baseUrl: window.location.origin, // URL atual do projeto
+        baseUrl: detectBaseUrl(),
         defaultWidth: '100%',
         defaultHeight: '600px',
         className: 'uniagro-embed'
@@ -23,7 +38,7 @@
         const iframe = document.createElement('iframe');
         
         // Configurações do iframe
-        iframe.src = `${EMBED_CONFIG.baseUrl}${options.questionarioId ? `?questionario=${options.questionarioId}` : ''}`;
+        iframe.src = `${EMBED_CONFIG.baseUrl}${options.questionarioId ? `?questionario=${options.questionarioId}&embed=true` : '?embed=true'}`;
         iframe.width = options.width || EMBED_CONFIG.defaultWidth;
         iframe.height = options.height || EMBED_CONFIG.defaultHeight;
         iframe.frameBorder = '0';
