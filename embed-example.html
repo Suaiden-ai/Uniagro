@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemplo de Embed - Uniagro Questionário</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon.png">
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .embed-container {
+            margin: 30px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .embed-container h3 {
+            color: #333;
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        
+        .instructions {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .instructions strong {
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌱 Uniagro - Sistema de Embed</h1>
+        <p>Exemplos de como embedar o questionário Uniagro em outros sites</p>
+    </div>
+
+    <div class="instructions">
+        <strong>Instruções:</strong> Para usar o embed em seu site, inclua o script e use uma das opções abaixo. 
+        O script está disponível em: <code>https://seu-dominio.com/embed.js</code>
+    </div>
+
+    <div class="embed-container">
+        <h3>🚀 Método 1: Auto-inicialização com data-attributes</h3>
+        <p>Forma mais simples - apenas adicione o atributo <code>data-uniagro-embed</code>:</p>
+        
+        <div class="code-block">
+&lt;div data-uniagro-embed 
+     data-width="100%" 
+     data-height="600px"
+     data-auto-resize="true"&gt;
+&lt;/div&gt;
+        </div>
+        
+        <div id="embed1" 
+             data-uniagro-embed 
+             data-width="100%" 
+             data-height="500px"
+             data-auto-resize="true">
+        </div>
+    </div>
+
+    <div class="embed-container">
+        <h3>⚙️ Método 2: JavaScript manual (mais controle)</h3>
+        <p>Para casos que precisam de mais controle programático:</p>
+        
+        <div class="code-block">
+&lt;div id="meu-questionario"&gt;&lt;/div&gt;
+&lt;script&gt;
+    UniAgroEmbed.create('meu-questionario', {
+        width: '100%',
+        height: '600px',
+        autoResize: true
+    });
+&lt;/script&gt;
+        </div>
+        
+        <div id="embed2"></div>
+    </div>
+
+    <div class="embed-container">
+        <h3>🎯 Método 3: Com questionário específico</h3>
+        <p>Caso você queira carregar um questionário específico:</p>
+        
+        <div class="code-block">
+&lt;div id="questionario-especifico"&gt;&lt;/div&gt;
+&lt;script&gt;
+    UniAgroEmbed.create('questionario-especifico', {
+        questionarioId: '123',
+        width: '100%',
+        height: '550px',
+        autoResize: true
+    });
+&lt;/script&gt;
+        </div>
+        
+        <div id="embed3"></div>
+    </div>
+
+    <div class="embed-container">
+        <h3>📱 Método 4: Responsivo com dimensões fixas</h3>
+        <p>Para controle mais preciso das dimensões:</p>
+        
+        <div class="code-block">
+&lt;div data-uniagro-embed 
+     data-width="800px" 
+     data-height="700px"
+     data-auto-resize="false"&gt;
+&lt;/div&gt;
+        </div>
+        
+        <div id="embed4" 
+             data-uniagro-embed 
+             data-width="100%" 
+             data-height="400px"
+             data-auto-resize="false">
+        </div>
+    </div>
+
+    <div class="instructions">
+        <strong>Parâmetros disponíveis:</strong>
+        <ul>
+            <li><code>width</code>: Largura do iframe (padrão: '100%')</li>
+            <li><code>height</code>: Altura do iframe (padrão: '600px')</li>
+            <li><code>questionarioId</code>: ID específico do questionário (opcional)</li>
+            <li><code>autoResize</code>: Redimensionamento automático (padrão: true)</li>
+        </ul>
+        
+        <strong>Métodos da API:</strong>
+        <ul>
+            <li><code>UniAgroEmbed.create(containerId, options)</code>: Criar novo embed</li>
+            <li><code>UniAgroEmbed.setBaseUrl(url)</code>: Configurar URL base</li>
+            <li><code>UniAgroEmbed.getConfig()</code>: Obter configurações atuais</li>
+            <li><code>UniAgroEmbed.remove(iframe)</code>: Remover embed</li>
+        </ul>
+    </div>
+
+    <!-- Include the embed script -->
+    <script src="embed.js"></script>
+    <script>
+        // Configure the base URL (replace with your actual domain)
+        // UniAgroEmbed.setBaseUrl('https://your-domain.com');
+
+        // Manual embed creation examples
+        UniAgroEmbed.create('embed2', {
+            width: '100%',
+            height: '600px',
+            autoResize: true
+        });
+
+        UniAgroEmbed.create('embed3', {
+            questionarioId: '123',
+            width: '100%',
+            height: '550px',
+            autoResize: true
+        });
+
+        // Example with event handling
+        const iframe = UniAgroEmbed.create('embed4', {
+            width: '100%',
+            height: '400px',
+            autoResize: false
+        });
+
+        if (iframe) {
+            iframe.onload = function() {
+                console.log('Embed carregado com sucesso!');
+            };
+        }
+    </script>
+</body>
+</html>

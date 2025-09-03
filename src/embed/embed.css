@@ -1,0 +1,75 @@
+/* Estilos específicos para modo embed */
+.embed-mode {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background: transparent !important;
+  margin: 0;
+  padding: 0;
+}
+
+.embed-mode * {
+  box-sizing: border-box;
+}
+
+.embed-mode .container {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 16px !important;
+}
+
+/* Ajustes para componentes em modo embed */
+.embed-mode .card {
+  box-shadow: none !important;
+  border: 1px solid #e5e7eb;
+}
+
+/* Reset de estilos que podem conflitar */
+.embed-mode button {
+  font-family: inherit;
+}
+
+.embed-mode input,
+.embed-mode select,
+.embed-mode textarea {
+  font-family: inherit;
+}
+
+/* Responsivo para embed */
+@media (max-width: 768px) {
+  .embed-mode .container {
+    padding: 12px !important;
+  }
+  
+  .embed-mode .card {
+    margin: 0 !important;
+  }
+}
+
+/* Evitar conflitos de z-index */
+.embed-mode .toast,
+.embed-mode .sonner-toast {
+  z-index: 999999 !important;
+}
+
+/* Loading states para embed */
+.embed-mode .loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.embed-mode .loading::after {
+  content: '';
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

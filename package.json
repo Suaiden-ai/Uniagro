@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+    "build:embed": "vite build --config vite.embed.config.ts",
+    "build:all": "npm run build && npm run build:embed",
     "lint": "eslint .",
     "preview": "vite preview"
   },
