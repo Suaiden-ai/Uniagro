@@ -20,96 +20,42 @@ export function notifyParentResize() {
 // Hook para usar em componentes React
 export function useEmbedResize() {
     useEffect(() => {
-        let resizeObserver: ResizeObserver | null = null;
-        let resizeTimeout: NodeJS.Timeout | null = null;
-        let lastHeight = 0;
+        let hasNotified = false;
+        let notifyTimeout: NodeJS.Timeout | null = null;
 
-        // Função para calcular altura precisa
-        const calculateHeight = () => {
-            // Aguardar renderização completa
-            return new Promise<number>((resolve) => {
-                setTimeout(() => {
-                    const heights = [
-                        document.documentElement.scrollHeight,
-                        document.documentElement.offsetHeight,
-                        document.body.scrollHeight,
-                        document.body.offsetHeight
-                    ];
-                    
-                    const maxHeight = Math.max(...heights);
-                    console.log('📐 Alturas calculadas:', heights, 'Máximo:', maxHeight);
-                    resolve(maxHeight);
-                }, 100);
-            });
-        };
-
-        // Função para notificar resize
-        const notifyResize = async () => {
-            if (resizeTimeout) clearTimeout(resizeTimeout);
+        // Função simples para notificar apenas uma vez
+        const notifyResize = () => {
+            if (hasNotified || notifyTimeout) return;
             
-            resizeTimeout = setTimeout(async () => {
-                const height = await calculateHeight();
+            notifyTimeout = setTimeout(() => {
+                const height = Math.max(
+                    document.documentElement.scrollHeight,
+                    document.body.scrollHeight
+                );
                 
-                // Evitar mudanças muito pequenas
-                if (Math.abs(height - lastHeight) < 20) return;
+                // Limitar altura
+                const finalHeight = Math.min(height, 1200);
                 
-                // Limitar altura máxima
-                const maxHeight = 2500;
-                const finalHeight = Math.min(height, maxHeight);
-                
-                if (window.parent !== window) {
+                if (window.parent !== window && finalHeight > 500) {
                     window.parent.postMessage({
                         type: 'uniagro-resize',
                         height: finalHeight
                     }, '*');
                     
-                    lastHeight = finalHeight;
-                    console.log('📤 Enviado novo tamanho:', finalHeight);
+                    hasNotified = true; // Notificar apenas uma vez
+                    console.log('📤 Tamanho enviado uma única vez:', finalHeight);
                 }
-            }, 200);
+                
+                notifyTimeout = null;
+            }, 2000); // Delay maior para garantir carregamento completo
         };
 
-        // Responder a solicitações de tamanho
-        const messageHandler = (event: MessageEvent) => {
-            if (event.data.type === 'uniagro-request-size') {
-                console.log('📥 Solicitação de tamanho recebida');
-                notifyResize();
-            }
-        };
-
-        window.addEventListener('message', messageHandler);
-
-        // Observer para mudanças no DOM
-        if (typeof ResizeObserver !== 'undefined') {
-            resizeObserver = new ResizeObserver(notifyResize);
-            resizeObserver.observe(document.body);
-        }
-
-        // Listener para mudanças na janela
-        window.addEventListener('resize', notifyResize);
-        
-        // Observer para mudanças no DOM
-        const mutationObserver = new MutationObserver(notifyResize);
-        mutationObserver.observe(document.body, {
-            childList: true,
-            subtree: true,
-            attributes: false
-        });
-
-        // Medições iniciais
-        setTimeout(notifyResize, 1000);
-        setTimeout(notifyResize, 3000); // Segunda verificação
+        // Apenas uma notificação após carregamento completo
+        const loadTimer = setTimeout(notifyResize, 3000);
 
         return () => {
-            if (resizeObserver) {
-                resizeObserver.disconnect();
-            }
-            if (resizeTimeout) {
-                clearTimeout(resizeTimeout);
-            }
-            window.removeEventListener('resize', notifyResize);
-            window.removeEventListener('message', messageHandler);
-            mutationObserver.disconnect();
+            if (notifyTimeout) clearTimeout(notifyTimeout);
+            clearTimeout(loadTimer);
         };
     }, []);
 }

@@ -4,8 +4,9 @@
   background: transparent !important;
   margin: 0 !important;
   padding: 0 !important;
-  overflow: visible !important; /* Permitir conteúdo crescer naturalmente */
-  min-height: 600px !important; /* Garantir altura mínima visível */
+  overflow: hidden !important; /* Controlar overflow para evitar scroll duplo */
+  height: 100vh !important; /* Usar altura da viewport */
+  max-height: 1000px !important; /* Limite máximo */
 }
 
 .embed-mode * {
@@ -15,13 +16,13 @@
 .embed-mode body {
   margin: 0 !important;
   padding: 0 !important;
-  overflow: visible !important; /* Sem scroll interno */
-  min-height: 600px !important;
+  overflow: hidden !important;
+  height: 100% !important;
 }
 
 .embed-mode html {
-  overflow: visible !important; /* Sem scroll interno */
-  min-height: 600px !important;
+  overflow: hidden !important;
+  height: 100% !important;
 }
 
 .embed-mode .container {
@@ -29,8 +30,9 @@
   max-width: 100% !important;
   margin: 0 !important;
   padding: 20px !important;
-  overflow: visible !important; /* Permitir crescimento natural */
-  min-height: 500px !important;
+  overflow-y: auto !important; /* Scroll apenas no container interno */
+  height: calc(100vh - 40px) !important;
+  max-height: 960px !important;
 }
 
 /* Ajustes para componentes em modo embed */

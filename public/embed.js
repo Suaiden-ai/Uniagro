@@ -66,42 +66,41 @@
     function setupAutoResize(iframe) {
         let lastHeight = 0;
         let resizeTimeout = null;
-        const minHeight = 500;
-        const maxHeight = 3000;
+        let resizeCount = 0;
+        const maxResizes = 5; // Limitar número de redimensionamentos
+        const minHeight = 600;
+        const maxHeight = 1200; // Limite mais conservador
         
         const messageHandler = function(event) {
             // Verificar origem por segurança
             if (event.origin !== EMBED_CONFIG.baseUrl) return;
             
-            if (event.data.type === 'uniagro-resize' && event.data.height) {
+            if (event.data.type === 'uniagro-resize' && event.data.height && resizeCount < maxResizes) {
                 let newHeight = Math.min(Math.max(event.data.height, minHeight), maxHeight);
                 
-                // Adicionar uma margem extra para evitar scroll
-                newHeight += 50;
+                // Evitar mudanças pequenas e loops
+                if (Math.abs(newHeight - lastHeight) < 50) return;
                 
-                // Evitar mudanças muito pequenas
-                if (Math.abs(newHeight - lastHeight) < 30) return;
-                
-                // Debounce
+                // Debounce mais longo
                 if (resizeTimeout) clearTimeout(resizeTimeout);
                 
                 resizeTimeout = setTimeout(() => {
                     iframe.style.height = newHeight + 'px';
                     iframe.style.minHeight = newHeight + 'px';
                     lastHeight = newHeight;
+                    resizeCount++;
                     
-                    // Log para debug
-                    console.log('📏 Iframe redimensionado para:', newHeight + 'px');
-                }, 300);
+                    console.log('📏 Iframe redimensionado para:', newHeight + 'px', '(tentativa', resizeCount + ')');
+                    
+                    // Parar após algumas tentativas
+                    if (resizeCount >= maxResizes) {
+                        console.log('⚠️ Limite de redimensionamentos atingido');
+                    }
+                }, 500);
             }
         };
 
         window.addEventListener('message', messageHandler);
-        
-        // Teste inicial de comunicação
-        setTimeout(() => {
-            iframe.contentWindow?.postMessage({ type: 'uniagro-request-size' }, EMBED_CONFIG.baseUrl);
-        }, 2000);
         
         // Cleanup function
         iframe.addEventListener('unload', function() {
