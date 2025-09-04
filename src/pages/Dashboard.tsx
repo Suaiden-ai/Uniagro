@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -38,7 +38,7 @@ const Dashboard = () => {
   const itemsPerPage = 10;
 
   // Cores para os gráficos
-  const COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#84cc16'];
+  const COLORS = useMemo(() => ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#84cc16'], []);
 
   // Função para formatar dados para gráficos
   const formatChartData = (data: any[]) => {
@@ -49,7 +49,7 @@ const Dashboard = () => {
     })) || [];
   };
 
-  const getDateRangeFilter = (range: string) => {
+  const getDateRangeFilter = useCallback((range: string) => {
     const now = new Date();
     switch (range) {
       case '7days':
@@ -68,9 +68,9 @@ const Dashboard = () => {
       default:
         return { start: subDays(now, 7), end: now };
     }
-  };
+  }, []);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
       const dateFilter = getDateRangeFilter(dateRange);
@@ -92,20 +92,20 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [dateRange, currentPage, itemsPerPage, getDateRangeFilter]);
 
-  const handleExport = async () => {
+  const handleExport = useCallback(async () => {
     try {
       const dateFilter = getDateRangeFilter(dateRange);
       await exportRegistrations(dateFilter);
     } catch (error) {
       console.error('Erro ao exportar dados:', error);
     }
-  };
+  }, [dateRange, getDateRangeFilter]);
 
   useEffect(() => {
     loadData();
-  }, [dateRange, currentPage]);
+  }, [loadData]);
 
   if (loading && !metrics) {
     return (

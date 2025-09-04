@@ -8,13 +8,30 @@ import { FormData, ESTADO_CIVIL_OPTIONS, SEXO_OPTIONS } from '@/types/form';
 import { validateCPF, validateCEP, formatCPF, formatCEP, validateName, validateTelefone, formatTelefone } from '@/lib/validations';
 import { useToast } from '@/hooks/use-toast';
 import { saveFormData, checkCpfExists } from '@/services/database';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, User, LogOut } from 'lucide-react';
 
 interface SinglePageFormProps {
   onBack?: () => void;
+  userId?: string;
+  onSuccess?: (data: any) => void;
+  hideHeader?: boolean;
+  showDashboardHeader?: boolean;
+  userInfo?: {
+    name: string;
+    email?: string;
+  };
+  onSignOut?: () => void;
 }
 
-export const SinglePageForm = ({ onBack }: SinglePageFormProps) => {
+export const SinglePageForm = ({ 
+  onBack, 
+  userId, 
+  onSuccess, 
+  hideHeader = false, 
+  showDashboardHeader = false, 
+  userInfo, 
+  onSignOut 
+}: SinglePageFormProps) => {
   const { toast } = useToast();
   const [formData, setFormData] = useState<FormData>({
     nomeCompleto: '',
@@ -186,15 +203,18 @@ export const SinglePageForm = ({ onBack }: SinglePageFormProps) => {
     setIsSubmitting(true);
 
     try {
-      const result = await saveFormData(formData);
+      const result = await saveFormData(formData, userId);
       
       if (result.success) {
-        console.log('Dados salvos no Supabase com sucesso!');
-        
         toast({
           title: "Informações enviadas com sucesso!",
           description: "Obrigado por participar da pesquisa UNIAGRO.",
         });
+
+        // Chamar callback de sucesso se fornecido
+        if (onSuccess) {
+          onSuccess(formData);
+        }
 
         // Limpar o formulário após sucesso
         setFormData({
@@ -250,14 +270,52 @@ export const SinglePageForm = ({ onBack }: SinglePageFormProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-green-50 py-12 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Botão Voltar */}
-        {onBack && (
-          <div className="mb-6">
-            <Button
-              type="button"
-              variant="ghost"
+    <div className="min-h-screen bg-gray-50">
+      {/* Dashboard Header */}
+      {showDashboardHeader && (
+        <header className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <div className="flex items-center">
+                <img 
+                  src="/uniagro-logo.png" 
+                  alt="Uniagro" 
+                  className="h-8 w-auto mr-3"
+                />
+                <h1 className="text-xl font-semibold text-gray-900">Dashboard - Questionário</h1>
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <User className="h-4 w-4 text-gray-400" />
+                  <span className="text-sm text-gray-700">{userInfo?.name}</span>
+                </div>
+                
+                {onSignOut && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onSignOut}
+                    className="flex items-center space-x-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Sair</span>
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </header>
+      )}
+      
+      <div className="py-12 px-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Botão Voltar */}
+          {onBack && (
+            <div className="mb-6">
+              <Button
+                type="button"
+                variant="ghost"
               onClick={onBack}
               className="flex items-center space-x-2 text-green-600 hover:text-green-700 hover:bg-green-100"
             >
@@ -267,21 +325,8 @@ export const SinglePageForm = ({ onBack }: SinglePageFormProps) => {
           </div>
         )}
         
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center mb-6">
-            <img 
-              src="/uniagro-logo.png" 
-              alt="UNIAGRO Logo" 
-              className="h-20 w-auto"
-            />
-          </div>
-          <p className="text-lg text-gray-600 mb-4">Questionário de Pesquisa</p>
-          <div className="w-32 h-1 bg-green-600 mx-auto rounded-full"></div>
-        </div>
-
         {/* Form Container */}
-        <div className="bg-white rounded-xl shadow-lg border border-green-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
           <div className="bg-green-700 px-8 py-6">
             <h2 className="text-2xl font-semibold text-white text-center">Informações Pessoais</h2>
             <p className="text-green-100 text-center mt-2">
@@ -669,6 +714,7 @@ export const SinglePageForm = ({ onBack }: SinglePageFormProps) => {
         {/* Footer Info */}
         <div className="text-center mt-8 text-sm text-gray-500">
           <p>© 2025 UNIAGRO - Todos os dados são protegidos e tratados com confidencialidade</p>
+        </div>
         </div>
       </div>
     </div>
