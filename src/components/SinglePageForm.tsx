@@ -8,8 +8,13 @@ import { FormData, ESTADO_CIVIL_OPTIONS, SEXO_OPTIONS } from '@/types/form';
 import { validateCPF, validateCEP, formatCPF, formatCEP, validateName, validateTelefone, formatTelefone } from '@/lib/validations';
 import { useToast } from '@/hooks/use-toast';
 import { saveFormData, checkCpfExists } from '@/services/database';
+import { ArrowLeft } from 'lucide-react';
 
-export const SinglePageForm = () => {
+interface SinglePageFormProps {
+  onBack?: () => void;
+}
+
+export const SinglePageForm = ({ onBack }: SinglePageFormProps) => {
   const { toast } = useToast();
   const [formData, setFormData] = useState<FormData>({
     nomeCompleto: '',
@@ -247,6 +252,21 @@ export const SinglePageForm = () => {
   return (
     <div className="min-h-screen bg-green-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
+        {/* Botão Voltar */}
+        {onBack && (
+          <div className="mb-6">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onBack}
+              className="flex items-center space-x-2 text-green-600 hover:text-green-700 hover:bg-green-100"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Voltar</span>
+            </Button>
+          </div>
+        )}
+        
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center mb-6">

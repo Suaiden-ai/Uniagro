@@ -1,5 +1,5 @@
 import React from 'react';
-import { SinglePageForm } from '@/components/SinglePageForm';
+import Index from '@/pages/Index';
 import { EmbedWrapper } from '@/components/EmbedWrapper';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -15,9 +15,7 @@ export const EmbedApp: React.FC = () => {
         <Toaster />
         <Sonner />
         <EmbedWrapper>
-          <div className="container mx-auto p-4">
-            <SinglePageForm />
-          </div>
+          <Index />
         </EmbedWrapper>
       </TooltipProvider>
     </QueryClientProvider>

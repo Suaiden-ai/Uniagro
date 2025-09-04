@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { authenticateAdmin, validateToken, generateToken, AdminUser, LoginCredentials } from '@/services/auth';
+import { authenticateAdmin, validateToken, logoutAdmin, AdminUser, LoginCredentials } from '@/services/auth';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -28,46 +28,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Verificar se já está autenticado no localStorage ao carregar
+  // Verificar se já está autenticado ao carregar
   useEffect(() => {
     const checkAuthStatus = async () => {
       setLoading(true);
       
       try {
-        const savedToken = localStorage.getItem('uniagro_admin_token');
-        const savedAuth = localStorage.getItem('uniagro_admin_auth');
+        // Verificar se há sessão ativa no Supabase
+        const validUser = await validateToken();
         
-        if (savedToken && savedAuth) {
-          const authData = JSON.parse(savedAuth);
-          
-          // Verificar se o token não expirou (24 horas)
-          const now = new Date().getTime();
-          const tokenAge = now - (authData.timestamp || 0);
-          const maxAge = 24 * 60 * 60 * 1000; // 24 horas
-          
-          if (tokenAge < maxAge) {
-            // Validar token no servidor
-            const validUser = await validateToken(savedToken);
-            
-            if (validUser) {
-              setIsAuthenticated(true);
-              setUser(validUser);
-            } else {
-              // Token inválido, limpar
-              localStorage.removeItem('uniagro_admin_token');
-              localStorage.removeItem('uniagro_admin_auth');
-            }
-          } else {
-            // Token expirado, limpar
-            localStorage.removeItem('uniagro_admin_token');
-            localStorage.removeItem('uniagro_admin_auth');
-          }
+        if (validUser) {
+          setIsAuthenticated(true);
+          setUser(validUser);
+        } else {
+          setIsAuthenticated(false);
+          setUser(null);
         }
       } catch (error) {
         console.error('Erro ao verificar autenticação:', error);
-        // Em caso de erro, limpar dados
-        localStorage.removeItem('uniagro_admin_token');
-        localStorage.removeItem('uniagro_admin_auth');
+        setIsAuthenticated(false);
+        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -83,17 +63,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (response.success && response.user) {
         setIsAuthenticated(true);
         setUser(response.user);
-        
-        // Gerar e salvar token
-        const token = generateToken(response.user);
-        
-        localStorage.setItem('uniagro_admin_token', token);
-        localStorage.setItem('uniagro_admin_auth', JSON.stringify({
-          isAuthenticated: true,
-          user: response.user,
-          timestamp: new Date().getTime()
-        }));
-        
         return true;
       }
       
@@ -104,11 +73,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const logout = () => {
-    setIsAuthenticated(false);
-    setUser(null);
-    localStorage.removeItem('uniagro_admin_token');
-    localStorage.removeItem('uniagro_admin_auth');
+  const logout = async () => {
+    try {
+      await logoutAdmin();
+      setIsAuthenticated(false);
+      setUser(null);
+    } catch (error) {
+      console.error('Erro no logout:', error);
+      // Mesmo com erro, limpar estado local
+      setIsAuthenticated(false);
+      setUser(null);
+    }
   };
 
   return (

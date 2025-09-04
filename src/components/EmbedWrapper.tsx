@@ -23,7 +23,7 @@ export const EmbedWrapper: React.FC<EmbedWrapperProps> = ({
       `}
       style={{
         minHeight: embedMode ? 'auto' : '100vh',
-        padding: embedMode ? '16px' : undefined,
+        padding: embedMode ? '8px' : undefined,
         background: embedMode ? 'transparent' : undefined
       }}
     >

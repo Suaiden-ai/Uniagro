@@ -19,13 +19,6 @@ export interface AuthResponse {
   error?: string;
 }
 
-// Função simples para hash de senha (em produção, use bcrypt no backend)
-const simpleHash = (password: string): string => {
-  // Esta é uma implementação simples para desenvolvimento
-  // Em produção, use bcrypt ou outra biblioteca segura no backend
-  return btoa(password + 'uniagro_salt');
-};
-
 export const authenticateAdmin = async (credentials: LoginCredentials): Promise<AuthResponse> => {
   try {
     const { email, password } = credentials;
@@ -38,48 +31,39 @@ export const authenticateAdmin = async (credentials: LoginCredentials): Promise<
       };
     }
 
-    // Validação de formato de email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return {
-        success: false,
-        error: 'Formato de email inválido'
-      };
-    }
+    // Fazer login usando Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-    // Usuários de teste com validação real
-    const testUsers = [
-      { 
-        email: 'admin@uniagro.com', 
-        password: 'admin123', 
-        user: { id: '1', email: 'admin@uniagro.com', name: 'Administrador Uniagro', role: 'admin', is_active: true }
-      },
-      { 
-        email: 'gestor@uniagro.com', 
-        password: 'gestor123',
-        user: { id: '2', email: 'gestor@uniagro.com', name: 'Gestor Uniagro', role: 'manager', is_active: true }
-      },
-      { 
-        email: 'analista@uniagro.com', 
-        password: 'analista123',
-        user: { id: '3', email: 'analista@uniagro.com', name: 'Analista Uniagro', role: 'analyst', is_active: true }
-      }
-    ];
-
-    const validUser = testUsers.find(
-      u => u.email === email.toLowerCase() && u.password === password
-    );
-
-    if (!validUser) {
+    if (authError || !authData.user) {
       return {
         success: false,
         error: 'Email ou senha incorretos'
       };
     }
 
+    // Buscar dados do perfil admin
+    const { data: adminUser, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, email, name, role, is_active')
+      .eq('id', authData.user.id)
+      .eq('is_active', true)
+      .single();
+
+    if (profileError || !adminUser) {
+      // Se não encontrou na tabela profiles, não é um admin autorizado
+      await supabase.auth.signOut();
+      return {
+        success: false,
+        error: 'Acesso não autorizado para administração'
+      };
+    }
+
     return {
       success: true,
-      user: validUser.user
+      user: adminUser
     };
 
   } catch (error) {
@@ -91,37 +75,38 @@ export const authenticateAdmin = async (credentials: LoginCredentials): Promise<
   }
 };
 
-export const validateToken = async (token: string): Promise<AdminUser | null> => {
+export const validateToken = async (): Promise<AdminUser | null> => {
   try {
-    // Validar se o token está no formato correto (base64)
-    const decoded = atob(token);
-    const userData = JSON.parse(decoded);
+    // Verificar se há sessão ativa no Supabase
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     
-    // Verificar se o usuário ainda existe e está ativo
-    const { data: adminData, error } = await supabase
-      .from('admin_users')
-      .select('id, email, name, role, is_active')
-      .eq('id', userData.id)
-      .eq('is_active', true)
-      .single();
-
-    if (error || !adminData) {
+    if (sessionError || !session?.user) {
       return null;
     }
 
-    return adminData;
+    // Buscar dados do perfil admin
+    const { data: adminUser, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, email, name, role, is_active')
+      .eq('id', session.user.id)
+      .eq('is_active', true)
+      .single();
+
+    if (profileError || !adminUser) {
+      return null;
+    }
+
+    return adminUser;
   } catch (error) {
+    console.error('Erro na validação do token:', error);
     return null;
   }
 };
 
-export const generateToken = (user: AdminUser): string => {
-  // Gerar token simples (em produção, use JWT)
-  const tokenData = {
-    id: user.id,
-    email: user.email,
-    timestamp: Date.now()
-  };
-  
-  return btoa(JSON.stringify(tokenData));
+export const logoutAdmin = async (): Promise<void> => {
+  try {
+    await supabase.auth.signOut();
+  } catch (error) {
+    console.error('Erro no logout:', error);
+  }
 };
