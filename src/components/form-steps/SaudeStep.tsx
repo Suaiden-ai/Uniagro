@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
 
 interface SaudeData {
   temDeficiencia: boolean;
@@ -20,11 +20,12 @@ interface SaudeStepProps {
   data: Partial<SaudeData>;
   onNext: (data: SaudeData) => void;
   onPrevious: () => void;
+  onSave?: (data: SaudeData) => void;
   isFirst: boolean;
   isLast: boolean;
 }
 
-export const SaudeStep = ({ data, onNext, onPrevious, isFirst }: SaudeStepProps) => {
+export const SaudeStep = ({ data, onNext, onPrevious, onSave, isFirst }: SaudeStepProps) => {
   const [formData, setFormData] = useState<SaudeData>({
     temDeficiencia: data.temDeficiencia || false,
     qualDeficiencia: data.qualDeficiencia || '',
@@ -246,10 +247,27 @@ export const SaudeStep = ({ data, onNext, onPrevious, isFirst }: SaudeStepProps)
           Anterior
         </Button>
 
-        <Button onClick={handleNext} className="bg-green-600 hover:bg-green-700">
-          Próxima
-          <ArrowRight className="h-4 w-4 ml-2" />
-        </Button>
+        <div className="flex space-x-4">
+          {onSave && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                console.log('💾 BOTÃO SALVAR CLICADO no SaudeStep');
+                console.log('💾 Dados atuais que serão enviados:', formData);
+                onSave(formData);
+              }}
+              className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
+            >
+              <Save className="h-4 w-4 mr-2" />
+              Salvar informações
+            </Button>
+          )}
+          
+          <Button onClick={handleNext} className="bg-green-600 hover:bg-green-700">
+            Próxima
+            <ArrowRight className="h-4 w-4 ml-2" />
+          </Button>
+        </div>
       </div>
     </div>
   );

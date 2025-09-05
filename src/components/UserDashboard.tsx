@@ -13,6 +13,10 @@ interface FormSubmission {
   timestamp_cadastro: string;
   nome_completo: string;
   cpf: string;
+  source?: string;
+  status_completo?: boolean;
+  etapas_completas?: number;
+  total_etapas?: number;
 }
 
 const UserDashboard = () => {
@@ -21,7 +25,7 @@ const UserDashboard = () => {
   const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Otimizar função para carregar submissions
+  // Função para carregar dados do questionário multistep
   const loadUserSubmissions = useCallback(async () => {
     if (!user) {
       setLoading(false);
@@ -30,20 +34,35 @@ const UserDashboard = () => {
 
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('cadastro_inicial')
-        .select('id_linha, timestamp_cadastro, nome_completo, cpf')
+      
+      // Buscar apenas da tabela questionario_multistep
+      const { data: questionarioData, error: questionarioError } = await supabase
+        .from('questionario_multistep')
+        .select('id, timestamp_cadastro, nome_completo, documentacao_cpf, status_completo, etapas_completas, total_etapas')
         .eq('user_id', user.id)
         .order('timestamp_cadastro', { ascending: false });
 
-      if (error) {
-        console.warn('Erro ao carregar formulários:', error);
+      if (questionarioError) {
+        console.warn('Erro ao carregar questionario_multistep:', questionarioError);
         setSubmissions([]);
-      } else {
-        setSubmissions(data || []);
+        return;
       }
+
+      // Converter dados do questionário para o formato esperado
+      const submissions = (questionarioData || []).map(item => ({
+        id_linha: item.id,
+        timestamp_cadastro: item.timestamp_cadastro,
+        nome_completo: item.nome_completo,
+        cpf: item.documentacao_cpf,
+        source: 'questionario_multistep',
+        status_completo: item.status_completo,
+        etapas_completas: item.etapas_completas,
+        total_etapas: item.total_etapas
+      }));
+
+      setSubmissions(submissions);
     } catch (error) {
-      console.warn('Erro ao carregar formulários:', error);
+      console.warn('Erro ao carregar questionário:', error);
       setSubmissions([]);
     } finally {
       setLoading(false);
@@ -80,6 +99,57 @@ const UserDashboard = () => {
   // Memoizar handlers para evitar re-renders
   const handleStartForm = useCallback(() => setShowForm(true), []);
   const handleBackToDashboard = useCallback(() => setShowForm(false), []);
+
+  // Função para recalcular etapas (debug/correção)
+  const recalculateSteps = useCallback(async () => {
+    if (!user) return;
+    
+    try {
+      // Buscar o registro atual
+      const { data: currentRecord } = await supabase
+        .from('questionario_multistep')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (!currentRecord) {
+        return;
+      }
+      
+      // Contar quantos campos/etapas foram preenchidos
+      const etapasPreenchidas = [
+        currentRecord.entidade_nome ? 1 : 0, // Entidade
+        currentRecord.dirigente_nome ? 1 : 0, // Dirigente  
+        currentRecord.nome_completo ? 1 : 0, // Proprietário
+        currentRecord.documentacao_cpf ? 1 : 0, // Documentação
+        currentRecord.renda_total !== null ? 1 : 0, // Renda
+        currentRecord.saude_tem_plano_saude !== null ? 1 : 0, // Saúde
+        currentRecord.propriedade_area_hectares !== null ? 1 : 0, // Propriedade
+        currentRecord.infraestrutura_tem_energia_eletrica !== null ? 1 : 0, // Infraestrutura
+        currentRecord.producao_cultiva_algo !== null ? 1 : 0, // Produção
+        currentRecord.comunicacao_tem_internet !== null ? 1 : 0, // Comunicação
+        currentRecord.habitacao_tem_casa_propriedade !== null ? 1 : 0, // Habitação
+        currentRecord.familia_qtd_pessoas !== null ? 1 : 0, // Família
+      ].reduce((a, b) => a + b, 0);
+      
+      // Atualizar no banco
+      const { error } = await supabase
+        .from('questionario_multistep')
+        .update({
+          etapas_completas: etapasPreenchidas,
+          total_etapas: 12
+        })
+        .eq('user_id', user.id);
+      
+      if (!error) {
+        // Recarregar dados
+        loadUserSubmissions();
+      }
+    } catch (error) {
+      console.error('Erro ao recalcular etapas:', error);
+    }
+  }, [user, loadUserSubmissions]);
+
 
   // Memoizar dados derivados
   const userName = useMemo(() => {
@@ -137,7 +207,7 @@ const UserDashboard = () => {
               <img 
                 src="/uniagro-logo.png" 
                 alt="Uniagro" 
-                className="h-8 w-auto mr-3"
+                className="header-logo mr-3"
               />
               <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
             </div>
@@ -184,52 +254,112 @@ const UserDashboard = () => {
               </CardHeader>
               
               <CardContent>
-                {submissions.length === 0 ? (
-                  <div className="text-center py-8">
-                    <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
-                      Nenhum questionário preenchido
-                    </h3>
-                    <p className="text-gray-500 mb-6">
-                      Você ainda não preencheu o questionário. Clique no botão abaixo para começar.
-                    </p>
-                    
-                    <Button
-                      onClick={handleStartForm}
-                      className="bg-green-600 hover:bg-green-700"
-                    >
-                      Preencher Questionário
-                    </Button>
-                  </div>
-                ) : (
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-2">
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                        <span className="font-medium text-gray-900">Questionário Preenchido</span>
-                        <Badge variant="outline" className="text-green-600">
-                          Completo
-                        </Badge>
+                {(() => {
+                  // Verificar se há questionário na tabela questionario_multistep
+                  const questionario = submissions.find(sub => sub.source === 'questionario_multistep');
+                  
+                  if (!questionario) {
+                    // Nenhum questionário iniciado
+                    return (
+                      <div className="text-center py-8">
+                        <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">
+                          Nenhum questionário preenchido
+                        </h3>
+                        <p className="text-gray-500 mb-6">
+                          Você ainda não preencheu o questionário. Clique no botão abaixo para começar.
+                        </p>
+                        
+                        <Button
+                          onClick={handleStartForm}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          Preencher Questionário
+                        </Button>
+                      </div>
+                    );
+                  }
+                  
+                  if (questionario.status_completo) {
+                    // Questionário completo
+                    return (
+                      <div>
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center space-x-2">
+                            <CheckCircle className="h-5 w-5 text-green-500" />
+                            <span className="font-medium text-gray-900">Questionário Preenchido</span>
+                            <Badge variant="outline" className="text-green-600">
+                              Completo
+                            </Badge>
+                          </div>
+                          
+                          <Button
+                            variant="outline"
+                            onClick={handleStartForm}
+                            size="sm"
+                          >
+                            Preencher Novamente
+                          </Button>
+                        </div>
+                        
+                        <Alert>
+                          <CheckCircle className="h-4 w-4" />
+                          <AlertDescription>
+                            Obrigado por preencher o questionário! Suas informações foram salvas com sucesso.
+                            Você pode preencher novamente se desejar atualizar seus dados.
+                          </AlertDescription>
+                        </Alert>
+                      </div>
+                    );
+                  }
+                  
+                  // Questionário em andamento
+                  const progresso = questionario.etapas_completas && questionario.total_etapas 
+                    ? Math.round((questionario.etapas_completas / questionario.total_etapas) * 100)
+                    : 0;
+                  
+                  return (
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center space-x-2">
+                          <Clock className="h-5 w-5 text-yellow-500" />
+                          <span className="font-medium text-gray-900">Questionário em Andamento</span>
+                          <Badge variant="outline" className="text-yellow-600">
+                            {progresso}% completo
+                          </Badge>
+                        </div>
+                        
+                        <Button
+                          onClick={handleStartForm}
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          Continuar Questionário
+                        </Button>
                       </div>
                       
-                      <Button
-                        variant="outline"
-                        onClick={handleStartForm}
-                        size="sm"
-                      >
-                        Preencher Novamente
-                      </Button>
+                      <div className="mb-4">
+                        <div className="flex justify-between text-sm text-gray-600 mb-1">
+                          <span>Progresso</span>
+                          <span>{questionario.etapas_completas || 0} de {questionario.total_etapas || 12} etapas</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-yellow-500 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${progresso}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      <Alert>
+                        <Clock className="h-4 w-4" />
+                        <AlertDescription>
+                          Você tem um questionário em andamento. Clique no botão acima para continuar de onde parou.
+                        </AlertDescription>
+                      </Alert>
                     </div>
-                    
-                    <Alert>
-                      <CheckCircle className="h-4 w-4" />
-                      <AlertDescription>
-                        Obrigado por preencher o questionário! Suas informações foram salvas com sucesso.
-                        Você pode preencher novamente se desejar atualizar seus dados.
-                      </AlertDescription>
-                    </Alert>
-                  </div>
-                )}
+                  );
+                })()}
               </CardContent>
             </Card>
           </div>
@@ -269,14 +399,23 @@ const UserDashboard = () => {
                   <p className="text-sm text-gray-500">Nenhum formulário preenchido ainda</p>
                 ) : (
                   <div className="space-y-3">
-                    {submissions.slice(0, 3).map((submission) => (
+                    {submissions.map((submission) => (
                       <div key={submission.id_linha} className="flex items-center space-x-2">
-                        <Clock className="h-4 w-4 text-gray-400" />
+                        {submission.status_completo ? (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <Clock className="h-4 w-4 text-yellow-500" />
+                        )}
                         <div className="flex-1">
                           <p className="text-xs text-gray-500">
                             {new Date(submission.timestamp_cadastro).toLocaleDateString('pt-BR')}
                           </p>
-                          <p className="text-sm text-gray-900">Questionário preenchido</p>
+                          <p className="text-sm text-gray-900">
+                            {submission.status_completo 
+                              ? 'Questionário completo' 
+                              : `Questionário em andamento (${submission.etapas_completas || 0}/${submission.total_etapas || 12} etapas)`
+                            }
+                          </p>
                         </div>
                       </div>
                     ))}

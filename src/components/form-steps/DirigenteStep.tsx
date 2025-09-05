@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save, CheckSquare } from 'lucide-react';
 
 interface DirigenteData {
   nome: string;
@@ -17,11 +17,13 @@ interface DirigenteStepProps {
   data: Partial<DirigenteData>;
   onNext: (data: DirigenteData) => void;
   onPrevious: () => void;
+  onSave?: (data: DirigenteData) => void;
+  onFinish?: () => void;
   isFirst: boolean;
   isLast: boolean;
 }
 
-export const DirigenteStep = ({ data, onNext, onPrevious, isFirst }: DirigenteStepProps) => {
+export const DirigenteStep = ({ data, onNext, onPrevious, onSave, onFinish, isFirst, isLast }: DirigenteStepProps) => {
   const [formData, setFormData] = useState<DirigenteData>({
     nome: data.nome || '',
     apelido: data.apelido || '',
@@ -42,6 +44,9 @@ export const DirigenteStep = ({ data, onNext, onPrevious, isFirst }: DirigenteSt
   };
 
   const validateForm = (): boolean => {
+    console.log('🔍 DirigenteStep - validateForm iniciada');
+    console.log('🔍 Dados atuais:', formData);
+    
     const newErrors: Record<string, string> = {};
 
     if (!formData.nome.trim()) {
@@ -60,13 +65,22 @@ export const DirigenteStep = ({ data, onNext, onPrevious, isFirst }: DirigenteSt
       newErrors.telefone = 'Telefone é obrigatório';
     }
 
+    console.log('🔍 Erros encontrados:', newErrors);
+    console.log('🔍 Formulário válido:', Object.keys(newErrors).length === 0);
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleNext = () => {
+    console.log('🎯 DirigenteStep - handleNext chamado');
+    console.log('🎯 Dados do formulário antes da validação:', formData);
+    
     if (validateForm()) {
+      console.log('✅ Validação passou - enviando dados:', formData);
       onNext(formData);
+    } else {
+      console.log('❌ Validação falhou - erros:', errors);
     }
   };
 
@@ -180,10 +194,40 @@ export const DirigenteStep = ({ data, onNext, onPrevious, isFirst }: DirigenteSt
           Anterior
         </Button>
 
-        <Button onClick={handleNext} className="bg-green-600 hover:bg-green-700">
-          Próxima
-          <ArrowRight className="h-4 w-4 ml-2" />
-        </Button>
+        <div className="flex space-x-4">
+          {onSave && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                console.log('💾 BOTÃO SALVAR CLICADO no DirigenteStep');
+                console.log('💾 Dados atuais que serão enviados:', formData);
+                console.log('💾 Validação antes do salvamento:', validateForm());
+                if (validateForm()) {
+                  console.log('✅ Dados válidos - enviando para onSave:', formData);
+                  onSave(formData);
+                } else {
+                  console.log('❌ Dados inválidos - não será salvo. Erros:', errors);
+                }
+              }}
+              className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
+            >
+              <Save className="h-4 w-4 mr-2" />
+              Salvar informações
+            </Button>
+          )}
+          
+          {isLast ? (
+            <Button onClick={onFinish} className="bg-green-600 hover:bg-green-700">
+              <CheckSquare className="h-4 w-4 mr-2" />
+              Finalizar
+            </Button>
+          ) : (
+            <Button onClick={handleNext} className="bg-green-600 hover:bg-green-700">
+              Próxima
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );

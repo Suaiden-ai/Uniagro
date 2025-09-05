@@ -280,7 +280,7 @@ export const SinglePageForm = ({
                 <img 
                   src="/uniagro-logo.png" 
                   alt="Uniagro" 
-                  className="h-8 w-auto mr-3"
+                  className="header-logo mr-3"
                 />
                 <h1 className="text-xl font-semibold text-gray-900">Dashboard - Questionário</h1>
               </div>

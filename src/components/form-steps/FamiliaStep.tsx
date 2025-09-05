@@ -2,7 +2,10 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, ArrowRight, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Plus, Trash2, Save, CheckSquare } from 'lucide-react';
+import { MobileFormWrapper } from '@/components/ui/mobile-form-wrapper';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useMobileClasses } from '@/hooks/use-mobile-classes';
 
 interface PessoaFamilia {
   nome: string;
@@ -22,11 +25,15 @@ interface FamiliaStepProps {
   data: Partial<FamiliaData>;
   onNext: (data: FamiliaData) => void;
   onPrevious: () => void;
+  onSave?: (data: FamiliaData) => void;
+  onFinish?: () => void;
   isFirst: boolean;
   isLast: boolean;
 }
 
-export const FamiliaStep = ({ data, onNext, onPrevious, isFirst }: FamiliaStepProps) => {
+export const FamiliaStep = ({ data, onNext, onPrevious, onSave, onFinish, isFirst, isLast }: FamiliaStepProps) => {
+  const isMobile = useIsMobile();
+  const classes = useMobileClasses();
   const [formData, setFormData] = useState<FamiliaData>({
     conjuge: data.conjuge || { nome: '', idade: 0, profissao: '' },
     filhos: data.filhos || [],
@@ -35,6 +42,7 @@ export const FamiliaStep = ({ data, onNext, onPrevious, isFirst }: FamiliaStepPr
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSaving, setIsSaving] = useState(false);
 
   const updatePessoa = (tipo: 'conjuge' | 'pai' | 'mae', field: keyof PessoaFamilia, value: string | number) => {
     setFormData(prev => ({
@@ -110,6 +118,16 @@ export const FamiliaStep = ({ data, onNext, onPrevious, isFirst }: FamiliaStepPr
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleSave = async () => {
+    if (onSave) {
+      setIsSaving(true);
+      console.log('💾 BOTÃO SALVAR CLICADO no FamiliaStep');
+      console.log('💾 Dados atuais que serão enviados:', formData);
+      await onSave(formData);
+      setIsSaving(false);
+    }
+  };
+
   const handleNext = () => {
     if (validateForm()) {
       onNext(formData);
@@ -117,7 +135,15 @@ export const FamiliaStep = ({ data, onNext, onPrevious, isFirst }: FamiliaStepPr
   };
 
   return (
-    <div className="space-y-6">
+    <MobileFormWrapper
+      onPrevious={onPrevious}
+      onNext={handleNext}
+      onSave={handleSave}
+      onFinish={onFinish}
+      isFirst={isFirst}
+      isLast={isLast}
+      isSaving={isSaving}
+    >
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gray-900">Dados da Família</h2>
         <p className="text-gray-600 mt-2">
@@ -130,7 +156,7 @@ export const FamiliaStep = ({ data, onNext, onPrevious, isFirst }: FamiliaStepPr
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-900">Cônjuge</h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className={`grid ${classes.gridCols}`}>
             <div>
               <Label htmlFor="conjuge_nome" className="text-base font-semibold">
                 Nome *
@@ -175,14 +201,14 @@ export const FamiliaStep = ({ data, onNext, onPrevious, isFirst }: FamiliaStepPr
 
         {/* Filhos */}
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
+          <div className={`flex ${isMobile ? 'flex-col space-y-3' : 'justify-between items-center'}`}>
             <h3 className="text-lg font-semibold text-gray-900">Filhos</h3>
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={addFilho}
-              className="flex items-center space-x-2"
+              className={`flex items-center space-x-2 ${isMobile ? 'w-full justify-center' : ''}`}
             >
               <Plus className="h-4 w-4" />
               <span>Adicionar Filho</span>
@@ -191,20 +217,21 @@ export const FamiliaStep = ({ data, onNext, onPrevious, isFirst }: FamiliaStepPr
           
           {formData.filhos.map((filho, index) => (
             <div key={index} className="border rounded-lg p-4 space-y-4">
-              <div className="flex justify-between items-center">
+              <div className={`flex ${isMobile ? 'flex-col space-y-3' : 'justify-between items-center'}`}>
                 <h4 className="text-md font-semibold text-gray-800">Filho {index + 1}</h4>
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={() => removeFilho(index)}
-                  className="text-red-600 hover:text-red-700"
+                  className={`text-red-600 hover:text-red-700 ${isMobile ? 'w-full justify-center' : ''}`}
                 >
                   <Trash2 className="h-4 w-4" />
+                  {isMobile && <span className="ml-2">Remover</span>}
                 </Button>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-1 md:grid-cols-3 gap-4'}`}>
                 <div>
                   <Label htmlFor={`filho_${index}_nome`} className="text-base font-semibold">
                     Nome *
@@ -253,7 +280,7 @@ export const FamiliaStep = ({ data, onNext, onPrevious, isFirst }: FamiliaStepPr
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-900">Pai</h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-1 md:grid-cols-3 gap-4'}`}>
             <div>
               <Label htmlFor="pai_nome" className="text-base font-semibold">
                 Nome *
@@ -300,7 +327,7 @@ export const FamiliaStep = ({ data, onNext, onPrevious, isFirst }: FamiliaStepPr
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-900">Mãe</h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-1 md:grid-cols-3 gap-4'}`}>
             <div>
               <Label htmlFor="mae_nome" className="text-base font-semibold">
                 Nome *
@@ -343,23 +370,6 @@ export const FamiliaStep = ({ data, onNext, onPrevious, isFirst }: FamiliaStepPr
           </div>
         </div>
       </div>
-
-      {/* Botões de navegação */}
-      <div className="flex justify-between pt-8">
-        <Button
-          variant="outline"
-          onClick={onPrevious}
-          disabled={isFirst}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Anterior
-        </Button>
-
-        <Button onClick={handleNext} className="bg-green-600 hover:bg-green-700">
-          Próxima
-          <ArrowRight className="h-4 w-4 ml-2" />
-        </Button>
-      </div>
-    </div>
+    </MobileFormWrapper>
   );
 };

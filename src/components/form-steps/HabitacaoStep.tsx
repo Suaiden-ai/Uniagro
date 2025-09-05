@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
 
 interface HabitacaoData {
   temCasaPropriedade: boolean;
@@ -15,11 +15,12 @@ interface HabitacaoStepProps {
   data: Partial<HabitacaoData>;
   onNext: (data: HabitacaoData) => void;
   onPrevious: () => void;
+  onSave?: (data: HabitacaoData) => void;
   isFirst: boolean;
   isLast: boolean;
 }
 
-export const HabitacaoStep = ({ data, onNext, onPrevious, isFirst }: HabitacaoStepProps) => {
+export const HabitacaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: HabitacaoStepProps) => {
   const [formData, setFormData] = useState<HabitacaoData>({
     temCasaPropriedade: data.temCasaPropriedade || false,
     temBanheiro: data.temBanheiro || false,
@@ -43,8 +44,14 @@ export const HabitacaoStep = ({ data, onNext, onPrevious, isFirst }: HabitacaoSt
   };
 
   const handleNext = () => {
+    console.log('🏠 HabitacaoStep - handleNext chamado');
+    console.log('🏠 Dados do formulário:', formData);
+    
     if (validateForm()) {
+      console.log('🏠 Validação passou - chamando onNext com:', formData);
       onNext(formData);
+    } else {
+      console.log('🏠 Validação falhou:', errors);
     }
   };
 
@@ -154,10 +161,27 @@ export const HabitacaoStep = ({ data, onNext, onPrevious, isFirst }: HabitacaoSt
           Anterior
         </Button>
 
-        <Button onClick={handleNext} className="bg-green-600 hover:bg-green-700">
-          Próxima
-          <ArrowRight className="h-4 w-4 ml-2" />
-        </Button>
+        <div className="flex space-x-4">
+          {onSave && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                console.log('💾 BOTÃO SALVAR CLICADO no HabitacaoStep');
+                console.log('💾 Dados atuais que serão enviados:', formData);
+                onSave(formData);
+              }}
+              className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
+            >
+              <Save className="h-4 w-4 mr-2" />
+              Salvar informações
+            </Button>
+          )}
+          
+          <Button onClick={handleNext} className="bg-green-600 hover:bg-green-700">
+            Próxima
+            <ArrowRight className="h-4 w-4 ml-2" />
+          </Button>
+        </div>
       </div>
     </div>
   );

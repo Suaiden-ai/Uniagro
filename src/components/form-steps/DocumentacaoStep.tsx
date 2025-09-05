@@ -5,7 +5,9 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { FileUpload } from '@/components/ui/file-upload';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, ArrowRight, FileText, Upload, Save } from 'lucide-react';
+import { ArrowLeft, ArrowRight, FileText, Upload, Save, CheckSquare } from 'lucide-react';
+import { saveDocumentacaoWithFiles } from '@/services/database';
+import { toast } from '@/hooks/use-toast';
 
 interface DocumentacaoData {
   rg: string;
@@ -26,12 +28,14 @@ interface DocumentacaoStepProps {
   data: Partial<DocumentacaoData>;
   onNext: (data: DocumentacaoData) => void;
   onPrevious: () => void;
-  onSave?: () => void;
+  onSave?: (data: DocumentacaoData) => void;
+  onFinish?: () => void;
   isFirst: boolean;
   isLast: boolean;
+  userId?: string; // Adicionado para upload de documentos
 }
 
-export const DocumentacaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: DocumentacaoStepProps) => {
+export const DocumentacaoStep = ({ data, onNext, onPrevious, onSave, onFinish, isFirst, isLast, userId }: DocumentacaoStepProps) => {
   const [formData, setFormData] = useState<DocumentacaoData>({
     rg: data.rg || '',
     cpf: data.cpf || '',
@@ -48,6 +52,7 @@ export const DocumentacaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: 
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isUploading, setIsUploading] = useState(false);
 
   const updateFormData = (field: keyof DocumentacaoData, value: string | number | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -122,6 +127,65 @@ export const DocumentacaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: 
   const handleNext = () => {
     if (validateForm()) {
       onNext(formData);
+    }
+  };
+
+  // Função específica para salvar com upload de documentos
+  const handleSaveWithUpload = async () => {
+    if (!userId) {
+      toast({
+        title: "Erro",
+        description: "Usuário não identificado para upload",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!validateForm()) {
+      toast({
+        title: "Erro de validação",
+        description: "Corrija os erros do formulário antes de salvar",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    
+    try {
+      const result = await saveDocumentacaoWithFiles(
+        userId,
+        formData,
+        formData.anexos.rgFile,
+        formData.anexos.cpfFile
+      );
+      
+      if (result.success) {
+        toast({
+          title: "Sucesso!",
+          description: "Documentos salvos e enviados com sucesso",
+        });
+        
+        // Chamar onSave original se existir
+        if (onSave) {
+          onSave(formData);
+        }
+      } else {
+        toast({
+          title: "Erro no upload",
+          description: result.error || "Erro ao salvar documentos",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Erro no upload:', error);
+      toast({
+        title: "Erro",
+        description: "Erro interno ao salvar documentos",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -310,18 +374,26 @@ export const DocumentacaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: 
           {onSave && (
             <Button
               variant="outline"
-              onClick={onSave}
+              onClick={handleSaveWithUpload}
+              disabled={isUploading}
               className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
             >
               <Save className="h-4 w-4 mr-2" />
-              Salvar informações
+              {isUploading ? 'Salvando...' : 'Salvar informações'}
             </Button>
           )}
           
-          <Button onClick={handleNext} className="bg-green-600 hover:bg-green-700">
-            Próxima
-            <ArrowRight className="h-4 w-4 ml-2" />
-          </Button>
+          {isLast ? (
+            <Button onClick={onFinish} className="bg-green-600 hover:bg-green-700">
+              <CheckSquare className="h-4 w-4 mr-2" />
+              Finalizar
+            </Button>
+          ) : (
+            <Button onClick={handleNext} className="bg-green-600 hover:bg-green-700">
+              Próxima
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
+          )}
         </div>
       </div>
     </div>

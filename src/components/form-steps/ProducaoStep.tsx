@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
 
 interface ProducaoData {
   temPasto: boolean;
@@ -18,6 +18,7 @@ interface ProducaoData {
   feijaoPrevisaoQuantidade: number;
   areaPermitidaSemUso: number;
   temCriacoes: boolean;
+  tiposCriacoes: string[];
   frangosGranja: number;
   idadeFrangos: number;
   inicioFrangos: string;
@@ -46,11 +47,12 @@ interface ProducaoStepProps {
   data: Partial<ProducaoData>;
   onNext: (data: ProducaoData) => void;
   onPrevious: () => void;
+  onSave?: (data: ProducaoData) => void;
   isFirst: boolean;
   isLast: boolean;
 }
 
-export const ProducaoStep = ({ data, onNext, onPrevious, isFirst }: ProducaoStepProps) => {
+export const ProducaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: ProducaoStepProps) => {
   const [formData, setFormData] = useState<ProducaoData>({
     temPasto: data.temPasto || false,
     areaPasto: data.areaPasto || 0,
@@ -64,6 +66,7 @@ export const ProducaoStep = ({ data, onNext, onPrevious, isFirst }: ProducaoStep
     feijaoPrevisaoQuantidade: data.feijaoPrevisaoQuantidade || 0,
     areaPermitidaSemUso: data.areaPermitidaSemUso || 0,
     temCriacoes: data.temCriacoes || false,
+    tiposCriacoes: data.tiposCriacoes || [],
     frangosGranja: data.frangosGranja || 0,
     idadeFrangos: data.idadeFrangos || 0,
     inicioFrangos: data.inicioFrangos || '',
@@ -90,13 +93,14 @@ export const ProducaoStep = ({ data, onNext, onPrevious, isFirst }: ProducaoStep
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const updateFormData = (field: keyof ProducaoData, value: string | number | boolean) => {
+  const updateFormData = (field: keyof ProducaoData, value: string | number | boolean | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Limpar erro do campo ao digitar
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
+
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -113,7 +117,11 @@ export const ProducaoStep = ({ data, onNext, onPrevious, isFirst }: ProducaoStep
       newErrors.quaisProducoes = 'Especifique quais produções';
     }
 
-    if (formData.temCriacoes && formData.frangosGranja <= 0) {
+    if (formData.temCriacoes && formData.tiposCriacoes.length === 0) {
+      newErrors.tiposCriacoes = 'Selecione pelo menos um tipo de criação';
+    }
+
+    if (formData.temCriacoes && formData.tiposCriacoes.includes('FRANGOS') && formData.frangosGranja <= 0) {
       newErrors.frangosGranja = 'Quantidade de frangos deve ser maior que zero';
     }
 
@@ -349,7 +357,51 @@ export const ProducaoStep = ({ data, onNext, onPrevious, isFirst }: ProducaoStep
 
           {formData.temCriacoes && (
             <div className="space-y-4">
-              <h4 className="text-md font-semibold text-gray-800">Frango Granja</h4>
+              <div>
+                <Label className="text-base font-semibold">Quais tipos de criações?</Label>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {[
+                      { value: 'FRANGOS', label: 'Frangos' },
+                      { value: 'BOVINOS', label: 'Bovinos' },
+                      { value: 'SUINOS', label: 'Suínos' },
+                      { value: 'CAPRINOS', label: 'Caprinos' },
+                      { value: 'OVINOS', label: 'Ovinos' },
+                      { value: 'AVES', label: 'Aves (outras)' }
+                    ].map((tipo) => (
+                      <div key={tipo.value} className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id={tipo.value}
+                          checked={formData.tiposCriacoes.includes(tipo.value)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setFormData(prev => ({
+                                ...prev,
+                                tiposCriacoes: [...prev.tiposCriacoes, tipo.value]
+                              }));
+                            } else {
+                              setFormData(prev => ({
+                                ...prev,
+                                tiposCriacoes: prev.tiposCriacoes.filter(t => t !== tipo.value)
+                              }));
+                            }
+                          }}
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        />
+                        <label htmlFor={tipo.value} className="text-sm font-medium text-gray-700">
+                          {tipo.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {errors.tiposCriacoes && <p className="text-red-600 text-sm mt-1">{errors.tiposCriacoes}</p>}
+              </div>
+
+              {formData.tiposCriacoes.includes('FRANGOS') && (
+                <div className="space-y-4">
+                  <h4 className="text-md font-semibold text-gray-800">Frango Granja</h4>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -417,6 +469,8 @@ export const ProducaoStep = ({ data, onNext, onPrevious, isFirst }: ProducaoStep
                   />
                 </div>
               </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -697,10 +751,27 @@ export const ProducaoStep = ({ data, onNext, onPrevious, isFirst }: ProducaoStep
           Anterior
         </Button>
 
-        <Button onClick={handleNext} className="bg-green-600 hover:bg-green-700">
-          Próxima
-          <ArrowRight className="h-4 w-4 ml-2" />
-        </Button>
+        <div className="flex space-x-4">
+          {onSave && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                console.log('💾 BOTÃO SALVAR CLICADO no ProducaoStep');
+                console.log('💾 Dados atuais que serão enviados:', formData);
+                onSave(formData);
+              }}
+              className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
+            >
+              <Save className="h-4 w-4 mr-2" />
+              Salvar informações
+            </Button>
+          )}
+          
+          <Button onClick={handleNext} className="bg-green-600 hover:bg-green-700">
+            Próxima
+            <ArrowRight className="h-4 w-4 ml-2" />
+          </Button>
+        </div>
       </div>
     </div>
   );

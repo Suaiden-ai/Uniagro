@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save, CheckSquare } from 'lucide-react';
 
 interface RendaData {
   profissao1: string;
@@ -25,12 +25,13 @@ interface RendaStepProps {
   data: Partial<RendaData>;
   onNext: (data: RendaData) => void;
   onPrevious: () => void;
-  onSave?: () => void;
+  onSave?: (data: RendaData) => void;
+  onFinish?: () => void;
   isFirst: boolean;
   isLast: boolean;
 }
 
-export const RendaStep = ({ data, onNext, onPrevious, onSave, isFirst }: RendaStepProps) => {
+export const RendaStep = ({ data, onNext, onPrevious, onSave, onFinish, isFirst, isLast }: RendaStepProps) => {
   console.log('🔍 RENDA STEP - Dados recebidos como props:', data);
   
   const [formData, setFormData] = useState<RendaData>({
@@ -354,7 +355,11 @@ export const RendaStep = ({ data, onNext, onPrevious, onSave, isFirst }: RendaSt
           {onSave && (
             <Button
               variant="outline"
-              onClick={onSave}
+              onClick={() => {
+                console.log('💾 BOTÃO SALVAR CLICADO no RendaStep');
+                console.log('💾 Dados atuais que serão enviados:', formData);
+                onSave(formData);
+              }}
               className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
             >
               <Save className="h-4 w-4 mr-2" />
@@ -362,10 +367,17 @@ export const RendaStep = ({ data, onNext, onPrevious, onSave, isFirst }: RendaSt
             </Button>
           )}
           
-          <Button onClick={handleNext} className="bg-green-600 hover:bg-green-700">
-            Próxima
-            <ArrowRight className="h-4 w-4 ml-2" />
-          </Button>
+          {isLast ? (
+            <Button onClick={onFinish} className="bg-green-600 hover:bg-green-700">
+              <CheckSquare className="h-4 w-4 mr-2" />
+              Finalizar
+            </Button>
+          ) : (
+            <Button onClick={handleNext} className="bg-green-600 hover:bg-green-700">
+              Próxima
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
+          )}
         </div>
       </div>
     </div>

@@ -1,0 +1,252 @@
+/* Mobile optimizations for MultiStepForm */
+@media (max-width: 767px) {
+  /* Prevent horizontal overflow */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Header logo fix for mobile */
+  .header-logo,
+  header img {
+    height: 1.75rem !important;
+    width: auto !important;
+    padding: 0 !important;
+    margin-right: 0.75rem !important;
+    filter: none !important;
+    max-width: none !important;
+    flex-shrink: 0;
+  }
+  
+  /* Header layout improvements */
+  header h1 {
+    font-size: 0.9rem !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+  }
+  
+  /* Header container fix */
+  header .flex.items-center {
+    min-width: 0;
+    flex-shrink: 1;
+  }
+  
+  /* Better header spacing on mobile */
+  header .max-w-7xl {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Optimize user info section for mobile */
+  header .space-x-4 {
+    gap: 0.5rem;
+  }
+  
+  header .space-x-2 {
+    gap: 0.25rem;
+  }
+  
+  /* Make header more compact on mobile */
+  header .h-16 {
+    min-height: 3.5rem;
+    height: auto;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  /* Ensure cards don't overflow */
+  .card {
+    max-width: 100%;
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+  
+  /* Better form layout */
+  .grid {
+    display: block !important;
+  }
+  
+  .grid > div {
+    margin-bottom: 1rem;
+  }
+  
+  /* Ensure minimum touch targets */
+  .mobile-touch-target,
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Better touch area for buttons */
+  button {
+    padding: 12px 16px;
+    min-height: 44px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Better navigation buttons layout */
+  .space-y-3 > button,
+  .space-y-4 > button {
+    width: 100% !important;
+    margin-bottom: 0.75rem;
+  }
+  
+  /* Improved form elements spacing */
+  .form-step {
+    padding: 16px;
+  }
+  
+  /* Better sidebar overlay for mobile */
+  .mobile-sidebar-overlay {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  
+  /* Prevent zoom on inputs on iOS */
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="tel"],
+  select,
+  textarea {
+    font-size: 16px !important;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Better spacing for mobile cards */
+  .mobile-card {
+    margin: 8px;
+    border-radius: 12px;
+    max-width: calc(100vw - 16px);
+  }
+  
+  /* Optimized text sizes for mobile */
+  .mobile-title {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+  
+  .mobile-description {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  
+  /* Ensure buttons stack properly on mobile */
+  .flex {
+    flex-direction: column !important;
+    gap: 0.75rem;
+  }
+  
+  .flex > * {
+    width: 100% !important;
+  }
+  
+  /* Fix horizontal scroll issues */
+  .overflow-x-auto {
+    overflow-x: hidden;
+  }
+  
+  /* Better spacing for form sections */
+  .space-y-8 > div {
+    margin-bottom: 2rem;
+  }
+  
+  /* Improve visibility of error messages */
+  .text-red-600 {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    margin-top: 0.25rem;
+  }
+  
+  /* Better label styling */
+  label {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+}
+
+/* Header logo fix for all screen sizes */
+.header-logo,
+header img {
+  height: 2rem !important;
+  width: auto !important;
+  padding: 0 !important;
+  filter: none !important;
+  max-width: none !important;
+  flex-shrink: 0;
+  transition: none !important;
+}
+
+/* Desktop header adjustments */
+@media (min-width: 768px) {
+  .header-logo,
+  header img {
+    height: 2.5rem !important;
+    margin-right: 0.75rem !important;
+  }
+  
+  header h1 {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+}
+
+/* Improved scrolling for mobile */
+.mobile-scroll {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+}
+
+/* Safe area padding for devices with notches */
+@supports (padding: max(0px)) {
+  .mobile-safe-area {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    padding-top: max(16px, env(safe-area-inset-top));
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+}
+
+/* General mobile improvements */
+@media (max-width: 767px) {
+  /* Ensure content doesn't overflow viewport */
+  * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Better viewport handling */
+  html {
+    overflow-x: hidden;
+  }
+  
+  /* Improve touch targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 12px;
+  }
+  
+  /* Better form section spacing */
+  .form-section {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Better button group spacing */
+  .button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .button-group > button {
+    width: 100%;
+  }
+}

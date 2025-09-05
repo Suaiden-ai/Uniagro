@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
 
 interface ComunicacaoData {
   temSinalCelular: boolean;
@@ -22,11 +22,12 @@ interface ComunicacaoStepProps {
   data: Partial<ComunicacaoData>;
   onNext: (data: ComunicacaoData) => void;
   onPrevious: () => void;
+  onSave?: (data: ComunicacaoData) => void;
   isFirst: boolean;
   isLast: boolean;
 }
 
-export const ComunicacaoStep = ({ data, onNext, onPrevious, isFirst }: ComunicacaoStepProps) => {
+export const ComunicacaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: ComunicacaoStepProps) => {
   const [formData, setFormData] = useState<ComunicacaoData>({
     temSinalCelular: data.temSinalCelular || false,
     operadoraCelular: data.operadoraCelular || '',
@@ -75,8 +76,14 @@ export const ComunicacaoStep = ({ data, onNext, onPrevious, isFirst }: Comunicac
   };
 
   const handleNext = () => {
+    console.log('📡 ComunicacaoStep - handleNext chamado');
+    console.log('📡 Dados do formulário:', formData);
+    
     if (validateForm()) {
+      console.log('📡 Validação passou - chamando onNext com:', formData);
       onNext(formData);
+    } else {
+      console.log('📡 Validação falhou:', errors);
     }
   };
 
@@ -278,10 +285,27 @@ export const ComunicacaoStep = ({ data, onNext, onPrevious, isFirst }: Comunicac
           Anterior
         </Button>
 
-        <Button onClick={handleNext} className="bg-green-600 hover:bg-green-700">
-          Próxima
-          <ArrowRight className="h-4 w-4 ml-2" />
-        </Button>
+        <div className="flex space-x-4">
+          {onSave && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                console.log('💾 BOTÃO SALVAR CLICADO no ComunicacaoStep');
+                console.log('💾 Dados atuais que serão enviados:', formData);
+                onSave(formData);
+              }}
+              className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
+            >
+              <Save className="h-4 w-4 mr-2" />
+              Salvar informações
+            </Button>
+          )}
+          
+          <Button onClick={handleNext} className="bg-green-600 hover:bg-green-700">
+            Próxima
+            <ArrowRight className="h-4 w-4 ml-2" />
+          </Button>
+        </div>
       </div>
     </div>
   );

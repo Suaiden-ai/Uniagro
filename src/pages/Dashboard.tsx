@@ -235,25 +235,28 @@ const Dashboard = () => {
                   </TableHeader>
                   <TableBody>
                     {registrations.map((registration) => (
-                      <TableRow key={registration.id_linha}>
+                      <TableRow key={registration.id || registration.id_linha || Math.random()}>
                         <TableCell className="font-medium">
-                          {registration.nome_completo}
+                          {registration.nome_completo || 'N/A'}
                         </TableCell>
                         <TableCell>
-                          {registration.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.***.***-$4')}
+                          {(() => {
+                            const cpf = registration.cpf || registration.documentacao_cpf || '';
+                            return cpf ? cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.***.***-$4') : 'N/A';
+                          })()}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <Phone className="w-3 h-3" />
-                            {registration.telefone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')}
+                            {registration.telefone ? registration.telefone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : 'N/A'}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="secondary">{registration.estado}</Badge>
+                          <Badge variant="secondary">{registration.estado || 'N/A'}</Badge>
                         </TableCell>
-                        <TableCell>{registration.localidade}</TableCell>
+                        <TableCell>{registration.localidade || 'N/A'}</TableCell>
                         <TableCell>
-                          {format(new Date(registration.timestamp_cadastro), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                          {registration.timestamp_cadastro ? format(new Date(registration.timestamp_cadastro), 'dd/MM/yyyy HH:mm', { locale: ptBR }) : 'N/A'}
                         </TableCell>
                       </TableRow>
                     ))}

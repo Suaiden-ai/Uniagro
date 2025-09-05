@@ -12,7 +12,6 @@ import { EmbedWrapper } from "./components/EmbedWrapper";
 import UserAuth from "./components/UserAuth";
 import UserDashboard from "./components/UserDashboard";
 import { isEmbedMode } from "./hooks/use-embed";
-import { AuthProvider } from "./contexts/AuthContext";
 import { UserAuthProvider, useUserAuth } from "./contexts/UserAuthContext";
 
 const queryClient = new QueryClient();
@@ -21,7 +20,16 @@ const queryClient = new QueryClient();
 const AuthenticatedApp = () => {
   const { user, profile, loading } = useUserAuth();
 
+  // Debug logs iniciais
+  console.log('=== DEBUG INICIAL ===');
+  console.log('Loading:', loading);
+  console.log('User:', user);
+  console.log('Profile:', profile);
+  console.log('====================');
+
+  // Se está carregando, mostrar loading
   if (loading) {
+    console.log('Mostrando loading...');
     return (
       <div className="min-h-screen bg-green-50 flex items-center justify-center">
         <div className="text-center">
@@ -34,21 +42,34 @@ const AuthenticatedApp = () => {
 
   // Se não está logado, mostra a landing page
   if (!user) {
+    console.log('Usuário não logado, mostrando LandingPage');
     return <LandingPage />;
   }
 
-  // Se usuário está logado e temos o perfil, verificar o tipo
+  // Se usuário está logado, verificar o role
   if (user && profile) {
     const isAdmin = profile.role && ['admin', 'gestor', 'analista'].includes(profile.role);
     
+    // Debug logs
+    console.log('=== DEBUG REDIRECIONAMENTO ===');
+    console.log('User:', user);
+    console.log('Profile:', profile);
+    console.log('Role:', profile.role);
+    console.log('isAdmin:', isAdmin);
+    console.log('===============================');
+    
     if (isAdmin) {
+      console.log('Redirecionando para AdminPanel');
       return <AdminPanel />;
     } else {
+      console.log('Redirecionando para UserDashboard');
+      // Usuário comum (role: user, cliente, etc.) vai para UserDashboard
       return <UserDashboard />;
     }
   }
 
   // Se usuário está logado mas perfil é null, assumir usuário comum
+  console.log('Usuário logado mas profile é null, assumindo usuário comum');
   return <UserDashboard />;
 };
 
@@ -75,19 +96,17 @@ const App = () => {
         <Toaster />
         <Sonner />
         <UserAuthProvider>
-          <AuthProvider>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<AuthenticatedApp />} />
-                <Route path="/landing" element={<LandingPage />} />
-                <Route path="/login" element={<UserAuth />} />
-                <Route path="/public" element={<Index />} />
-                <Route path="/admin" element={<AdminPanel />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<AuthenticatedApp />} />
+              <Route path="/landing" element={<LandingPage />} />
+              <Route path="/login" element={<UserAuth />} />
+              <Route path="/public" element={<Index />} />
+              <Route path="/admin" element={<AdminPanel />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
         </UserAuthProvider>
       </TooltipProvider>
     </QueryClientProvider>

@@ -126,20 +126,33 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     // Escutar mudanças de autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {      
+      console.log('=== DEBUG AUTH STATE CHANGE ===');
+      console.log('Event:', event);
+      console.log('Session:', session);
+      console.log('Current user:', session?.user);
+      
       if (mounted) {
         const currentUser = session?.user ?? null;
         const userChanged = user?.id !== currentUser?.id;
         
-        // Só atualizar o estado se realmente houver mudança
+        console.log('User changed:', userChanged);
+        console.log('Current user ID:', currentUser?.id);
+        console.log('Previous user ID:', user?.id);
+        
+        // Atualizar usuário sempre que houver mudança
         if (userChanged) {
+          console.log('Atualizando usuário...');
           setUser(currentUser);
         }
         
-        if (currentUser && userChanged) {
-          // Só recarregar perfil se o usuário realmente mudou
+        if (currentUser) {
+          // Se usuário está logado, garantir que está no estado e carregar perfil
+          console.log('Usuário logado, carregando perfil...');
+          setUser(currentUser); // Garantir que o usuário está no estado
           setLoading(true);
           await loadProfile(currentUser.id);
-        } else if (!currentUser && userChanged) {
+        } else if (!currentUser) {
+          console.log('Usuário deslogado, limpando estado...');
           setUser(null);
           setProfile(null);
           // Limpar cache quando usuário faz logout
@@ -161,19 +174,25 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const loadProfile = async (userId: string) => {
     try {
+      console.log('=== DEBUG LOADPROFILE ===');
+      console.log('Carregando perfil para userId:', userId);
+      
       // Primeiro, tentar carregar do cache
       const cachedProfile = loadProfileFromStorage(userId);
       if (cachedProfile) {
+        console.log('Perfil encontrado no cache:', cachedProfile);
         setProfile(cachedProfile);
         setLoading(false);
         return;
       }
 
-      // Se já estamos carregando, não iniciar outro carregamento
-      if (loading) {
-        return;
-      }
+      // Remover esta verificação que está impedindo o carregamento
+      // if (loading) {
+      //   console.log('Já está carregando, saindo...');
+      //   return;
+      // }
 
+      console.log('Iniciando carregamento do banco...');
       setLoading(true);
 
       // Se não há cache, carregar do banco
@@ -188,13 +207,17 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         .eq('id', userId)
         .single();
 
+      console.log('Executando query no banco...');
       const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
+
+      console.log('Resultado da query:', { data, error });
 
       if (error) {
         console.warn('Erro ao carregar perfil:', error);
         setProfile(null);
         saveProfileToStorage(null, userId);
       } else {
+        console.log('Perfil carregado com sucesso:', data);
         setProfile(data);
         saveProfileToStorage(data, userId);
       }
@@ -263,13 +286,19 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const signIn = async (email: string, password: string) => {
     try {
+      console.log('=== DEBUG SIGNIN ===');
+      console.log('Tentando fazer login com:', email);
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
 
+      console.log('Resultado do login:', { data, error });
+
       return { error };
     } catch (error) {
+      console.log('Erro no login:', error);
       return { error };
     }
   };

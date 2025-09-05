@@ -20,7 +20,10 @@ export interface MultiStepFormData {
   // Dados da Entidade
   entidade: {
     nome: string;
+    cep: string;
     municipio: string;
+    bairro: string;
+    complemento: string;
     estado: string;
     numeroSociosInformados: number;
     numeroSociosPlataforma: number;
@@ -150,6 +153,7 @@ export interface MultiStepFormData {
     feijaoPrevisaoQuantidade: number;
     areaPermitidaSemUso: number;
     temCriacoes: boolean;
+    tiposCriacoes: string[];
     frangosGranja: number;
     idadeFrangos: number;
     inicioFrangos: string;
