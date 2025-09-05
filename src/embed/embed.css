@@ -98,6 +98,13 @@
   max-width: 100% !important;
 }
 
+/* Exceção para selects mobile */
+.embed-mode [data-radix-select-content],
+.embed-mode .mobile-select-content {
+  max-width: calc(100vw - 64px) !important;
+  width: calc(100vw - 64px) !important;
+}
+
 /* Evitar scroll dentro de elementos específicos */
 .embed-mode .scroll-area,
 .embed-mode [data-radix-scroll-area] {

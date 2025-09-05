@@ -310,7 +310,8 @@
   .mobile-card {
     margin: 8px;
     border-radius: 12px;
-    max-width: calc(100vw - 16px);
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   /* Optimized text sizes for mobile */
@@ -371,6 +372,7 @@
     background: white !important;
     color: #1f2937 !important;
     width: 100% !important;
+    max-width: 100% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
@@ -378,6 +380,7 @@
     transition: all 0.3s ease !important;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
     font-weight: 500 !important;
+    box-sizing: border-box !important;
   }
   
   [data-radix-select-trigger]:hover {
@@ -409,7 +412,9 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
     margin-top: 4px !important;
     padding: 4px !important;
+    width: 100% !important;
     max-width: 100% !important;
+    box-sizing: border-box !important;
   }
   
   /* Select items */
@@ -506,18 +511,29 @@
   .card .space-y-8 > div:has([data-radix-select-trigger]) {
     margin-bottom: 12px !important;
     max-width: 100% !important;
-    overflow: hidden !important;
+    box-sizing: border-box !important;
+    position: relative !important;
   }
   
   /* Limit select dropdown width */
   [data-radix-select-content],
   .mobile-select-content {
-    max-width: calc(100vw - 32px) !important;
-    left: 0 !important;
-    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    z-index: 9999 !important;
   }
-  
-  /* Override any conflicting styles */
+
+  /* Force select width with higher specificity */
+  .card [data-radix-select-content],
+  .card .mobile-select-content,
+  .space-y-2 [data-radix-select-content],
+  .space-y-4 [data-radix-select-content],
+  .space-y-8 [data-radix-select-content] {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }  /* Override any conflicting styles */
   .mobile-select-trigger,
   .mobile-select-content,
   .mobile-select-item {
@@ -534,6 +550,7 @@
     background: white !important;
     color: #1f2937 !important;
     width: 100% !important;
+    max-width: 100% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
@@ -541,6 +558,7 @@
     transition: all 0.3s ease !important;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
     font-weight: 500 !important;
+    box-sizing: border-box !important;
   }
   
   .mobile-select-content {
@@ -553,7 +571,9 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
     margin-top: 4px !important;
     padding: 4px !important;
+    width: 100% !important;
     max-width: 100% !important;
+    box-sizing: border-box !important;
   }
   
   .mobile-select-item {
@@ -581,6 +601,7 @@
     background: white !important;
     color: #1f2937 !important;
     width: 100% !important;
+    max-width: 100% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
@@ -588,6 +609,7 @@
     transition: all 0.3s ease !important;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
     margin-top: 8px !important;
+    box-sizing: border-box !important;
   }
   
   .mobile-select-trigger:hover {
@@ -616,7 +638,9 @@
     top: 100% !important;
     left: 0 !important;
     right: 0 !important;
+    width: 100% !important;
     max-width: 100% !important;
+    box-sizing: border-box !important;
   }
   
   .mobile-select-item {
@@ -712,10 +736,20 @@ header img {
 
 /* General mobile improvements */
 @media (max-width: 767px) {
-  /* Ensure content doesn't overflow viewport */
-  * {
+  /* Ensure content doesn't overflow viewport - EXCEPT SELECTS */
+  *:not([data-radix-select-content]):not(.mobile-select-content):not([data-radix-select-trigger]):not(.mobile-select-trigger) {
     max-width: 100%;
     box-sizing: border-box;
+  }
+  
+  /* Specific rules for select components to prevent horizontal overflow */
+  [data-radix-select-content],
+  .mobile-select-content,
+  [data-radix-select-trigger],
+  .mobile-select-trigger {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
   }
   
   /* Better viewport handling */
@@ -745,5 +779,81 @@ header img {
   
   .button-group > button {
     width: 100%;
+  }
+}
+
+/* FORÇA LARGURA DOS SELECTS MOBILE - MÁXIMA ESPECIFICIDADE */
+@media (max-width: 767px) {
+  [data-radix-select-content],
+  .mobile-select-content,
+  .card [data-radix-select-content],
+  .card .mobile-select-content,
+  .space-y-2 [data-radix-select-content],
+  .space-y-4 [data-radix-select-content],
+  .space-y-8 [data-radix-select-content],
+  .embed-mode [data-radix-select-content],
+  .embed-mode .mobile-select-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  [data-radix-select-trigger],
+  .mobile-select-trigger,
+  .card [data-radix-select-trigger],
+  .card .mobile-select-trigger,
+  .space-y-2 [data-radix-select-trigger],
+  .space-y-4 [data-radix-select-trigger],
+  .space-y-8 [data-radix-select-trigger],
+  .embed-mode [data-radix-select-trigger],
+  .embed-mode .mobile-select-trigger {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Additional rules to prevent horizontal overflow */
+  .form-section,
+  .space-y-4,
+  .space-y-8,
+  .bg-gray-50,
+  .card {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+  }
+  
+  /* Ensure all form elements stay within bounds */
+  .form-section > *,
+  .space-y-4 > *,
+  .space-y-8 > *,
+  .bg-gray-50 > *,
+  .card > * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Special handling for select containers to allow dropdowns */
+  .space-y-4 > div:has([data-radix-select-content]),
+  .space-y-8 > div:has([data-radix-select-content]),
+  .bg-gray-50 > div:has([data-radix-select-content]),
+  .space-y-4 > div:has(.mobile-select-content),
+  .space-y-8 > div:has(.mobile-select-content),
+  .bg-gray-50 > div:has(.mobile-select-content) {
+    overflow: visible !important;
+    position: relative !important;
+    z-index: auto !important;
+  }
+  
+  /* Ensure dropdown containers have proper stacking context */
+  .space-y-4 > div:has([data-radix-select-trigger]),
+  .space-y-8 > div:has([data-radix-select-trigger]),
+  .bg-gray-50 > div:has([data-radix-select-trigger]),
+  .space-y-4 > div:has(.mobile-select-trigger),
+  .space-y-8 > div:has(.mobile-select-trigger),
+  .bg-gray-50 > div:has(.mobile-select-trigger) {
+    overflow: visible !important;
+    position: relative !important;
   }
 }

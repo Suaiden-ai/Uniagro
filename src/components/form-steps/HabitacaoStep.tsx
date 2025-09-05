@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MobileSelect, MobileSelectContent, MobileSelectItem, MobileSelectTrigger, MobileSelectValue } from '@/components/ui/mobile-select';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
 
 interface HabitacaoData {
@@ -21,6 +23,7 @@ interface HabitacaoStepProps {
 }
 
 export const HabitacaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: HabitacaoStepProps) => {
+  const isMobile = useIsMobile();
   const [formData, setFormData] = useState<HabitacaoData>({
     temCasaPropriedade: data.temCasaPropriedade || false,
     temBanheiro: data.temBanheiro || false,
@@ -36,6 +39,44 @@ export const HabitacaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: Hab
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
+  };
+
+  const renderSelect = (field: keyof HabitacaoData, options: Array<{value: string, label: string}>, placeholder: string, value: string) => {
+    if (isMobile) {
+      return (
+        <MobileSelect value={value} onValueChange={(newValue) => {
+          updateFormData(field, newValue === 'sim');
+        }}>
+          <MobileSelectTrigger>
+            <MobileSelectValue placeholder={placeholder} />
+          </MobileSelectTrigger>
+          <MobileSelectContent>
+            {options.map((option) => (
+              <MobileSelectItem key={option.value} value={option.value}>
+                {option.label}
+              </MobileSelectItem>
+            ))}
+          </MobileSelectContent>
+        </MobileSelect>
+      );
+    }
+
+    return (
+      <Select value={value} onValueChange={(newValue) => {
+        updateFormData(field, newValue === 'sim');
+      }}>
+        <SelectTrigger className="mobile-select-trigger mt-2 h-12">
+          <SelectValue placeholder={placeholder} className="mobile-select-placeholder" />
+        </SelectTrigger>
+        <SelectContent className="mobile-select-content">
+          {options.map((option) => (
+            <SelectItem key={option.value} value={option.value} className="mobile-select-item">
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
   };
 
   const validateForm = (): boolean => {
@@ -71,18 +112,15 @@ export const HabitacaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: Hab
           
           <div>
             <Label className="text-base font-semibold">Tem casa na propriedade?</Label>
-            <Select
-              value={formData.temCasaPropriedade ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('temCasaPropriedade', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'temCasaPropriedade',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.temCasaPropriedade ? 'sim' : 'nao'
+            )}
           </div>
         </div>
 
@@ -92,18 +130,15 @@ export const HabitacaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: Hab
           
           <div>
             <Label className="text-base font-semibold">Tem banheiro?</Label>
-            <Select
-              value={formData.temBanheiro ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('temBanheiro', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'temBanheiro',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.temBanheiro ? 'sim' : 'nao'
+            )}
           </div>
         </div>
 
@@ -113,18 +148,15 @@ export const HabitacaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: Hab
           
           <div>
             <Label className="text-base font-semibold">Tem cisterna negra?</Label>
-            <Select
-              value={formData.cisternaNegra ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('cisternaNegra', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'cisternaNegra',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.cisternaNegra ? 'sim' : 'nao'
+            )}
           </div>
         </div>
 
@@ -134,18 +166,15 @@ export const HabitacaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: Hab
           
           <div>
             <Label className="text-base font-semibold">Tem saneamento?</Label>
-            <Select
-              value={formData.saneamento ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('saneamento', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'saneamento',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.saneamento ? 'sim' : 'nao'
+            )}
           </div>
         </div>
       </div>

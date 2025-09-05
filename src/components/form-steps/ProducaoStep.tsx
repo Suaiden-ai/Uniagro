@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MobileSelect, MobileSelectContent, MobileSelectItem, MobileSelectTrigger, MobileSelectValue } from '@/components/ui/mobile-select';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
 
 interface ProducaoData {
@@ -53,6 +55,7 @@ interface ProducaoStepProps {
 }
 
 export const ProducaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: ProducaoStepProps) => {
+  const isMobile = useIsMobile();
   const [formData, setFormData] = useState<ProducaoData>({
     temPasto: data.temPasto || false,
     areaPasto: data.areaPasto || 0,
@@ -99,6 +102,68 @@ export const ProducaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: Prod
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
+  };
+
+  const renderSelect = (field: keyof ProducaoData, options: Array<{value: string, label: string}>, placeholder: string, value: string) => {
+    if (isMobile) {
+      return (
+        <MobileSelect value={value} onValueChange={(newValue) => {
+          if (field === 'temPasto') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'temManga') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'temProducaoAgricola') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'temCriacoes') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'temPescado') {
+            updateFormData(field, newValue === 'sim');
+          } else {
+            updateFormData(field, newValue);
+          }
+        }}>
+          <MobileSelectTrigger>
+            <MobileSelectValue placeholder={placeholder} />
+          </MobileSelectTrigger>
+          <MobileSelectContent>
+            {options.map((option) => (
+              <MobileSelectItem key={option.value} value={option.value}>
+                {option.label}
+              </MobileSelectItem>
+            ))}
+          </MobileSelectContent>
+        </MobileSelect>
+      );
+    }
+
+    return (
+      <Select value={value} onValueChange={(newValue) => {
+        if (field === 'temPasto') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'temManga') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'temProducaoAgricola') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'temCriacoes') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'temPescado') {
+          updateFormData(field, newValue === 'sim');
+        } else {
+          updateFormData(field, newValue);
+        }
+      }}>
+        <SelectTrigger className="mobile-select-trigger mt-2 h-12">
+          <SelectValue placeholder={placeholder} className="mobile-select-placeholder" />
+        </SelectTrigger>
+        <SelectContent className="mobile-select-content">
+          {options.map((option) => (
+            <SelectItem key={option.value} value={option.value} className="mobile-select-item">
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
   };
 
 
@@ -151,18 +216,15 @@ export const ProducaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: Prod
           
           <div>
             <Label className="text-base font-semibold">Tem pasto?</Label>
-            <Select
-              value={formData.temPasto ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('temPasto', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'temPasto',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.temPasto ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.temPasto && (
@@ -189,18 +251,15 @@ export const ProducaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: Prod
           
           <div>
             <Label className="text-base font-semibold">Tem manga?</Label>
-            <Select
-              value={formData.temManga ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('temManga', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'temManga',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.temManga ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.temManga && (
@@ -227,18 +286,15 @@ export const ProducaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: Prod
           
           <div>
             <Label className="text-base font-semibold">Tem produção agrícola?</Label>
-            <Select
-              value={formData.temProducaoAgricola ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('temProducaoAgricola', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'temProducaoAgricola',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.temProducaoAgricola ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.temProducaoAgricola && (
@@ -341,18 +397,15 @@ export const ProducaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: Prod
           
           <div>
             <Label className="text-base font-semibold">Tem criações?</Label>
-            <Select
-              value={formData.temCriacoes ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('temCriacoes', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'temCriacoes',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.temCriacoes ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.temCriacoes && (
@@ -481,18 +534,15 @@ export const ProducaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: Prod
           
           <div>
             <Label className="text-base font-semibold">Tipo de produção</Label>
-            <Select
-              value={formData.producaoArtesanalIndustrial}
-              onValueChange={(value) => updateFormData('producaoArtesanalIndustrial', value as any)}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione o tipo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ARTESANAL">Artesanal</SelectItem>
-                <SelectItem value="INDUSTRIAL">Industrial</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'producaoArtesanalIndustrial',
+              [
+                { value: 'ARTESANAL', label: 'Artesanal' },
+                { value: 'INDUSTRIAL', label: 'Industrial' }
+              ],
+              'Selecione o tipo',
+              formData.producaoArtesanalIndustrial
+            )}
           </div>
 
           <div className="space-y-4">
@@ -594,18 +644,15 @@ export const ProducaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: Prod
           
           <div>
             <Label className="text-base font-semibold">Tem pescado?</Label>
-            <Select
-              value={formData.temPescado ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('temPescado', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'temPescado',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.temPescado ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.temPescado && (
@@ -695,21 +742,18 @@ export const ProducaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: Prod
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label className="text-base font-semibold">Setor</Label>
-              <Select
-                value={formData.setorExpansao}
-                onValueChange={(value) => updateFormData('setorExpansao', value as any)}
-              >
-                <SelectTrigger className="mt-2 h-12">
-                  <SelectValue placeholder="Selecione o setor" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="AGRICULTURA">Agricultura</SelectItem>
-                  <SelectItem value="PISCICULTURA">Piscicultura</SelectItem>
-                  <SelectItem value="APICULTURA">Apicultura</SelectItem>
-                  <SelectItem value="AGROINDUSTRIA">Agroindústria</SelectItem>
-                  <SelectItem value="AGROEXTRATIVISMO">Agroextrativismo</SelectItem>
-                </SelectContent>
-              </Select>
+              {renderSelect(
+                'setorExpansao',
+                [
+                  { value: 'AGRICULTURA', label: 'Agricultura' },
+                  { value: 'PISCICULTURA', label: 'Piscicultura' },
+                  { value: 'APICULTURA', label: 'Apicultura' },
+                  { value: 'AGROINDUSTRIA', label: 'Agroindústria' },
+                  { value: 'AGROEXTRATIVISMO', label: 'Agroextrativismo' }
+                ],
+                'Selecione o setor',
+                formData.setorExpansao
+              )}
             </div>
             <div>
               <Label htmlFor="necessidadesExpansao" className="text-base font-semibold">

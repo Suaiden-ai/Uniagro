@@ -57,14 +57,14 @@ export const MobileSelectTrigger = ({ children, className }: MobileSelectTrigger
     <button
       type="button"
       className={cn(
-        "mobile-select-trigger w-full flex items-center justify-between",
+        "mobile-select-trigger w-full max-w-full flex items-center justify-between",
         "min-h-[36px] px-3 py-2 text-sm font-medium",
         "border border-gray-200 rounded",
         "bg-white text-gray-900",
         "hover:border-green-500 hover:shadow-lg hover:-translate-y-0.5",
         "focus:outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100",
         "transition-all duration-300 ease-in-out",
-        "shadow-sm",
+        "shadow-sm box-border",
         isOpen && "border-green-500 shadow-lg -translate-y-0.5",
         className
       )}
@@ -89,9 +89,9 @@ export const MobileSelectContent = ({ children, className }: MobileSelectContent
   return (
     <div
       className={cn(
-        "mobile-select-content absolute top-full left-0 right-0 z-50 mt-2",
+        "mobile-select-content absolute top-full left-0 right-0 z-50 mt-2 max-w-full",
         "bg-white border-2 border-gray-200 rounded-xl shadow-2xl",
-        "max-h-80 overflow-y-auto",
+        "max-h-80 overflow-y-auto box-border",
         "animate-in fade-in-0 zoom-in-95 duration-200",
         className
       )}

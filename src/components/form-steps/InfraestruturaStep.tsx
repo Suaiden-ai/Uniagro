@@ -203,18 +203,15 @@ export const InfraestruturaStep = ({ data, onNext, onPrevious, onSave, isFirst }
           
           <div>
             <Label className="text-base font-semibold">Possui reserva?</Label>
-            <Select
-              value={formData.temReserva ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('temReserva', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'temReserva',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.temReserva ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.temReserva && (
@@ -256,38 +253,32 @@ export const InfraestruturaStep = ({ data, onNext, onPrevious, onSave, isFirst }
           
           <div>
             <Label className="text-base font-semibold">Tem acesso por estrada?</Label>
-            <Select
-              value={formData.temEstrada ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('temEstrada', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'temEstrada',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.temEstrada ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.temEstrada && (
             <div>
               <Label className="text-base font-semibold">Qualidade da estrada</Label>
-              <Select
-                value={formData.qualidadeEstrada}
-                onValueChange={(value) => updateFormData('qualidadeEstrada', value as any)}
-              >
-                <SelectTrigger className="mt-2 h-12">
-                  <SelectValue placeholder="Selecione a qualidade" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="OTIMA">Ótima</SelectItem>
-                  <SelectItem value="BOA">Boa</SelectItem>
-                  <SelectItem value="REGULAR">Regular</SelectItem>
-                  <SelectItem value="RUIM">Ruim</SelectItem>
-                  <SelectItem value="PESSIMA">Péssima</SelectItem>
-                </SelectContent>
-              </Select>
+              {renderSelect(
+                'qualidadeEstrada',
+                [
+                  { value: 'OTIMA', label: 'Ótima' },
+                  { value: 'BOA', label: 'Boa' },
+                  { value: 'REGULAR', label: 'Regular' },
+                  { value: 'RUIM', label: 'Ruim' },
+                  { value: 'PESSIMA', label: 'Péssima' }
+                ],
+                'Selecione a qualidade',
+                formData.qualidadeEstrada
+              )}
             </div>
           )}
         </div>
@@ -298,53 +289,44 @@ export const InfraestruturaStep = ({ data, onNext, onPrevious, onSave, isFirst }
           
           <div>
             <Label className="text-base font-semibold">Tem acesso à energia?</Label>
-            <Select
-              value={formData.temEnergia ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('temEnergia', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'temEnergia',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.temEnergia ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.temEnergia && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label className="text-base font-semibold">Tipo de energia</Label>
-                <Select
-                  value={formData.tipoEnergia}
-                  onValueChange={(value) => updateFormData('tipoEnergia', value as any)}
-                >
-                  <SelectTrigger className="mt-2 h-12">
-                    <SelectValue placeholder="Selecione o tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="MONOFASICO">Monofásico</SelectItem>
-                    <SelectItem value="BIFASICO">Bifásico</SelectItem>
-                    <SelectItem value="TRIFASICO">Trifásico</SelectItem>
-                  </SelectContent>
-                </Select>
+                {renderSelect(
+                  'tipoEnergia',
+                  [
+                    { value: 'MONOFASICO', label: 'Monofásico' },
+                    { value: 'BIFASICO', label: 'Bifásico' },
+                    { value: 'TRIFASICO', label: 'Trifásico' }
+                  ],
+                  'Selecione o tipo',
+                  formData.tipoEnergia
+                )}
               </div>
               <div>
                 <Label className="text-base font-semibold">Tipo alternativo</Label>
-                <Select
-                  value={formData.tipoAlternativoEnergia}
-                  onValueChange={(value) => updateFormData('tipoAlternativoEnergia', value as any)}
-                >
-                  <SelectTrigger className="mt-2 h-12">
-                    <SelectValue placeholder="Selecione o tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="OFFGRID">Off-grid</SelectItem>
-                    <SelectItem value="GERADOR">Gerador</SelectItem>
-                    <SelectItem value="OUTRO">Outro</SelectItem>
-                  </SelectContent>
-                </Select>
+                {renderSelect(
+                  'tipoAlternativoEnergia',
+                  [
+                    { value: 'OFFGRID', label: 'Off-grid' },
+                    { value: 'GERADOR', label: 'Gerador' },
+                    { value: 'OUTRO', label: 'Outro' }
+                  ],
+                  'Selecione o tipo',
+                  formData.tipoAlternativoEnergia
+                )}
               </div>
             </div>
           )}
@@ -356,55 +338,46 @@ export const InfraestruturaStep = ({ data, onNext, onPrevious, onSave, isFirst }
           
           <div>
             <Label className="text-base font-semibold">Tem acesso à água?</Label>
-            <Select
-              value={formData.temAgua ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('temAgua', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'temAgua',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.temAgua ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.temAgua && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label className="text-base font-semibold">Tipo de água</Label>
-                <Select
-                  value={formData.tipoAgua}
-                  onValueChange={(value) => updateFormData('tipoAgua', value as any)}
-                >
-                  <SelectTrigger className="mt-2 h-12">
-                    <SelectValue placeholder="Selecione o tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="POCO">Poço</SelectItem>
-                    <SelectItem value="RIO">Rio</SelectItem>
-                    <SelectItem value="CORREGO">Córrego</SelectItem>
-                    <SelectItem value="REPRESA">Represa</SelectItem>
-                    <SelectItem value="CACIMBA">Cacimba</SelectItem>
-                    <SelectItem value="PIPA">Pipa</SelectItem>
-                  </SelectContent>
-                </Select>
+                {renderSelect(
+                  'tipoAgua',
+                  [
+                    { value: 'POCO', label: 'Poço' },
+                    { value: 'RIO', label: 'Rio' },
+                    { value: 'CORREGO', label: 'Córrego' },
+                    { value: 'REPRESA', label: 'Represa' },
+                    { value: 'CACIMBA', label: 'Cacimba' },
+                    { value: 'PIPA', label: 'Pipa' }
+                  ],
+                  'Selecione o tipo',
+                  formData.tipoAgua
+                )}
               </div>
               <div>
                 <Label className="text-base font-semibold">Água encanada?</Label>
-                <Select
-                  value={formData.aguaEncanada ? 'sim' : 'nao'}
-                  onValueChange={(value) => updateFormData('aguaEncanada', value === 'sim')}
-                >
-                  <SelectTrigger className="mt-2 h-12">
-                    <SelectValue placeholder="Selecione uma opção" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="sim">Sim</SelectItem>
-                    <SelectItem value="nao">Não</SelectItem>
-                  </SelectContent>
-                </Select>
+                {renderSelect(
+                  'aguaEncanada',
+                  [
+                    { value: 'sim', label: 'Sim' },
+                    { value: 'nao', label: 'Não' }
+                  ],
+                  'Selecione uma opção',
+                  formData.aguaEncanada ? 'sim' : 'nao'
+                )}
               </div>
             </div>
           )}
@@ -449,66 +422,54 @@ export const InfraestruturaStep = ({ data, onNext, onPrevious, onSave, isFirst }
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <Label className="text-base font-semibold">Possui galpão?</Label>
-              <Select
-                value={formData.possuiGalpao ? 'sim' : 'nao'}
-                onValueChange={(value) => updateFormData('possuiGalpao', value === 'sim')}
-              >
-                <SelectTrigger className="mt-2 h-12">
-                  <SelectValue placeholder="Selecione uma opção" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sim">Sim</SelectItem>
-                  <SelectItem value="nao">Não</SelectItem>
-                </SelectContent>
-              </Select>
+              {renderSelect(
+                'possuiGalpao',
+                [
+                  { value: 'sim', label: 'Sim' },
+                  { value: 'nao', label: 'Não' }
+                ],
+                'Selecione uma opção',
+                formData.possuiGalpao ? 'sim' : 'nao'
+              )}
             </div>
 
             <div>
               <Label className="text-base font-semibold">Possui silo?</Label>
-              <Select
-                value={formData.possuiSilo ? 'sim' : 'nao'}
-                onValueChange={(value) => updateFormData('possuiSilo', value === 'sim')}
-              >
-                <SelectTrigger className="mt-2 h-12">
-                  <SelectValue placeholder="Selecione uma opção" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sim">Sim</SelectItem>
-                  <SelectItem value="nao">Não</SelectItem>
-                </SelectContent>
-              </Select>
+              {renderSelect(
+                'possuiSilo',
+                [
+                  { value: 'sim', label: 'Sim' },
+                  { value: 'nao', label: 'Não' }
+                ],
+                'Selecione uma opção',
+                formData.possuiSilo ? 'sim' : 'nao'
+              )}
             </div>
 
             <div>
               <Label className="text-base font-semibold">Reservatório de água?</Label>
-              <Select
-                value={formData.reservatorioAgua ? 'sim' : 'nao'}
-                onValueChange={(value) => updateFormData('reservatorioAgua', value === 'sim')}
-              >
-                <SelectTrigger className="mt-2 h-12">
-                  <SelectValue placeholder="Selecione uma opção" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sim">Sim</SelectItem>
-                  <SelectItem value="nao">Não</SelectItem>
-                </SelectContent>
-              </Select>
+              {renderSelect(
+                'reservatorioAgua',
+                [
+                  { value: 'sim', label: 'Sim' },
+                  { value: 'nao', label: 'Não' }
+                ],
+                'Selecione uma opção',
+                formData.reservatorioAgua ? 'sim' : 'nao'
+              )}
             </div>
 
             <div>
               <Label className="text-base font-semibold">Energia fotovoltaica?</Label>
-              <Select
-                value={formData.energiaFotovoltaica ? 'sim' : 'nao'}
-                onValueChange={(value) => updateFormData('energiaFotovoltaica', value === 'sim')}
-              >
-                <SelectTrigger className="mt-2 h-12">
-                  <SelectValue placeholder="Selecione uma opção" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sim">Sim</SelectItem>
-                  <SelectItem value="nao">Não</SelectItem>
-                </SelectContent>
-              </Select>
+              {renderSelect(
+                'energiaFotovoltaica',
+                [
+                  { value: 'sim', label: 'Sim' },
+                  { value: 'nao', label: 'Não' }
+                ],
+                'Selecione uma opção',
+                formData.energiaFotovoltaica ? 'sim' : 'nao'
+              )}
             </div>
           </div>
 
@@ -535,37 +496,31 @@ export const InfraestruturaStep = ({ data, onNext, onPrevious, onSave, isFirst }
           
           <div>
             <Label className="text-base font-semibold">Possui sistema de irrigação?</Label>
-            <Select
-              value={formData.sistemaIrrigacao ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('sistemaIrrigacao', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'sistemaIrrigacao',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.sistemaIrrigacao ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.sistemaIrrigacao && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label className="text-base font-semibold">Tipo de irrigação</Label>
-                <Select
-                  value={formData.tipoIrrigacao}
-                  onValueChange={(value) => updateFormData('tipoIrrigacao', value as any)}
-                >
-                  <SelectTrigger className="mt-2 h-12">
-                    <SelectValue placeholder="Selecione o tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="GOTEJO">Gotejo</SelectItem>
-                    <SelectItem value="PIVO">Pivô</SelectItem>
-                    <SelectItem value="ASPERSOR">Aspersor</SelectItem>
-                  </SelectContent>
-                </Select>
+                {renderSelect(
+                  'tipoIrrigacao',
+                  [
+                    { value: 'GOTEJO', label: 'Gotejo' },
+                    { value: 'PIVO', label: 'Pivô' },
+                    { value: 'ASPERSOR', label: 'Aspersor' }
+                  ],
+                  'Selecione o tipo',
+                  formData.tipoIrrigacao
+                )}
               </div>
               <div>
                 <Label htmlFor="areaIrrigada" className="text-base font-semibold">
