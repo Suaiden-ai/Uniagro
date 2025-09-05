@@ -424,12 +424,12 @@ export const SinglePageForm = ({
                       Sexo
                     </Label>
                     <Select value={formData.sexo} onValueChange={(value) => updateFormData('sexo', value)}>
-                      <SelectTrigger className="h-12 text-base border-gray-300 focus:border-green-500 focus:ring-green-500 bg-white">
-                        <SelectValue placeholder="Selecione seu sexo" />
+                      <SelectTrigger className="mobile-select-trigger h-12 text-base border-gray-300 focus:border-green-500 focus:ring-green-500 bg-white">
+                        <SelectValue placeholder="Selecione seu sexo" className="mobile-select-placeholder" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="mobile-select-content">
                         {SEXO_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
+                          <SelectItem key={option.value} value={option.value} className="mobile-select-item">
                             {option.label}
                           </SelectItem>
                         ))}
@@ -451,12 +451,12 @@ export const SinglePageForm = ({
                       Estado civil
                     </Label>
                     <Select value={formData.estadoCivil} onValueChange={(value) => updateFormData('estadoCivil', value)}>
-                      <SelectTrigger className="h-12 text-base border-gray-300 focus:border-green-500 focus:ring-green-500 bg-white">
-                        <SelectValue placeholder="Selecione seu estado civil" />
+                      <SelectTrigger className="mobile-select-trigger h-12 text-base border-gray-300 focus:border-green-500 focus:ring-green-500 bg-white">
+                        <SelectValue placeholder="Selecione seu estado civil" className="mobile-select-placeholder" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="mobile-select-content">
                         {ESTADO_CIVIL_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
+                          <SelectItem key={option.value} value={option.value} className="mobile-select-item">
                             {option.label}
                           </SelectItem>
                         ))}
@@ -487,12 +487,12 @@ export const SinglePageForm = ({
                       }
                     }}
                   >
-                    <SelectTrigger className="h-12 text-base border-gray-300 focus:border-green-500 focus:ring-green-500 bg-white">
-                      <SelectValue placeholder="Selecione uma opção" />
+                    <SelectTrigger className="mobile-select-trigger h-12 text-base border-gray-300 focus:border-green-500 focus:ring-green-500 bg-white">
+                      <SelectValue placeholder="Selecione uma opção" className="mobile-select-placeholder" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="sim">Sim</SelectItem>
-                      <SelectItem value="nao">Não</SelectItem>
+                    <SelectContent className="mobile-select-content">
+                      <SelectItem value="sim" className="mobile-select-item">Sim</SelectItem>
+                      <SelectItem value="nao" className="mobile-select-item">Não</SelectItem>
                     </SelectContent>
                   </Select>
                   

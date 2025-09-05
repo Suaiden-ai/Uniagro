@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmação de Conta - UNIAGRO Brasil</title>
+    <style>
+        /* Reset e estilos base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Header com gradiente */
+        .email-header {
+            background: linear-gradient(135deg, #2E7D32 0%, #66BB6A 100%);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .email-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23FFFFFF" fill-opacity="0.1" fill-rule="nonzero"><circle cx="30" cy="30" r="2"/></g></g></svg>') repeat;
+            opacity: 0.3;
+        }
+        
+        .logo-container {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .logo {
+            width: 80px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        
+        .header-title {
+            color: #ffffff;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-subtitle {
+            color: #A5D6A7;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        /* Conteúdo principal */
+        .email-content {
+            padding: 40px 30px;
+        }
+        
+        .greeting {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2E7D32;
+            margin-bottom: 20px;
+        }
+        
+        .message {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #A5D6A7 0%, #C8E6C9 100%);
+            border-left: 4px solid #2E7D32;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+        
+        .highlight-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2E7D32;
+            margin-bottom: 10px;
+        }
+        
+        .highlight-description {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        /* Botão de confirmação */
+        .confirmation-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #2E7D32 0%, #66BB6A 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 16px 40px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin: 30px 0;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .confirmation-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
+        }
+        
+        /* Instruções */
+        .instructions {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .instructions-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2E7D32;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .instructions-title::before {
+            content: '📧';
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .instructions-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .instructions-list li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #555;
+        }
+        
+        .instructions-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #2E7D32;
+            font-weight: bold;
+        }
+        
+        /* Informações de segurança */
+        .security-info {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        
+        .security-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .security-title::before {
+            content: '🔒';
+            margin-right: 8px;
+        }
+        
+        .security-text {
+            font-size: 14px;
+            color: #856404;
+            line-height: 1.5;
+        }
+        
+        /* Footer */
+        .email-footer {
+            background-color: #212121;
+            color: #ffffff;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .footer-logo {
+            width: 60px;
+            height: auto;
+            margin-bottom: 15px;
+        }
+        
+        .footer-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .footer-description {
+            font-size: 14px;
+            color: #b0b0b0;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .footer-contact {
+            font-size: 14px;
+            color: #b0b0b0;
+            margin-bottom: 5px;
+        }
+        
+        .footer-copyright {
+            font-size: 12px;
+            color: #888;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 600px) {
+            .email-container {
+                margin: 10px;
+                border-radius: 8px;
+            }
+            
+            .email-header {
+                padding: 30px 20px;
+            }
+            
+            .email-content {
+                padding: 30px 20px;
+            }
+            
+            .email-footer {
+                padding: 25px 20px;
+            }
+            
+            .header-title {
+                font-size: 28px;
+            }
+            
+            .greeting {
+                font-size: 20px;
+            }
+            
+            .confirmation-button {
+                padding: 14px 30px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="email-header">
+            <div class="logo-container">
+                <!-- Logo da UNIAGRO - substitua pela URL real do logo -->
+                <img src="https://ycmclhodbxgujrdsrijs.supabase.co/storage/v1/object/public/logos/uniagro-logo.png" alt="UNIAGRO Brasil" class="logo">
+                <p class="header-subtitle">Organização da Sociedade Civil de Interesse Público</p>
+            </div>
+        </div>
+        
+        <!-- Conteúdo Principal -->
+        <div class="email-content">
+            <h2 class="greeting">Olá, {{user_name}}!</h2>
+            
+            <p class="message">
+                Bem-vindo(a) à <strong>UNIAGRO Brasil</strong>! Sua conta foi criada com sucesso e estamos muito felizes em tê-lo(a) como parte da nossa comunidade que está revolucionando o agronegócio brasileiro.
+            </p>
+            
+            <div class="highlight-box">
+                <div class="highlight-text">🎉 Conta Criada com Sucesso!</div>
+                <div class="highlight-description">
+                    Para ativar sua conta e começar a usar nossa plataforma, você precisa confirmar seu endereço de email clicando no botão abaixo.
+                </div>
+            </div>
+            
+            <!-- Botão de Confirmação -->
+            <div style="text-align: center;">
+                <a href="{{confirmation_url}}" class="confirmation-button">
+                    Confirmar Minha Conta
+                </a>
+            </div>
+            
+            <!-- Instruções -->
+            <div class="instructions">
+                <div class="instructions-title">Como confirmar sua conta:</div>
+                <ul class="instructions-list">
+                    <li>Clique no botão "Confirmar Minha Conta" acima</li>
+                    <li>Você será redirecionado para nossa plataforma</li>
+                    <li>Sua conta será ativada automaticamente</li>
+                    <li>Após a confirmação, você poderá fazer login normalmente</li>
+                </ul>
+            </div>
+            
+            <!-- Informações sobre a UNIAGRO -->
+            <div style="margin: 30px 0; padding: 25px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 8px;">
+                <h3 style="color: #2E7D32; font-size: 20px; margin-bottom: 15px;">Sobre a UNIAGRO</h3>
+                <p style="color: #555; line-height: 1.6; margin-bottom: 15px;">
+                    A UNIAGRO é uma OSCIP que congrega entidades como Associações, Sindicatos, Cooperativas, 
+                    Institutos e Fundações que atuam no desenvolvimento rural e na agricultura familiar em todo o Brasil.
+                </p>
+                <p style="color: #555; line-height: 1.6;">
+                    Nossa missão é estabelecer condições de acesso dos agricultores brasileiros aos diversos mercados 
+                    internos e externos, visando a segurança alimentar da população mundial.
+                </p>
+            </div>
+            
+            <!-- Informações de Segurança -->
+            <div class="security-info">
+                <div class="security-title">Informações de Segurança</div>
+                <div class="security-text">
+                    Este link de confirmação é válido por 24 horas. Se você não solicitou esta conta, 
+                    pode ignorar este email com segurança. Nunca compartilhe suas credenciais de login.
+                </div>
+            </div>
+            
+            <p class="message">
+                Se você tiver alguma dúvida ou precisar de ajuda, não hesite em entrar em contato conosco. 
+                Estamos aqui para apoiar o desenvolvimento do agronegócio brasileiro!
+            </p>
+        </div>
+        
+        <!-- Footer -->
+        <div class="email-footer">
+            <img src="https://ycmclhodbxgujrdsrijs.supabase.co/storage/v1/object/public/logos/uniagro-logo.png" alt="UNIAGRO Brasil" class="footer-logo">
+            <div class="footer-title">UNIAGRO BRASIL</div>
+            <div class="footer-description">
+                Plataforma digital que conecta o agronegócio brasileiro através de tecnologia, 
+                inovação e desenvolvimento sustentável.
+            </div>
+            <div class="footer-contact">📧 institucional@uniagro.com.br</div>
+            <div class="footer-contact">📞 +1 (407) 533-3005</div>
+            <div class="footer-contact">🌐 Brasil - Nacional</div>
+            <div class="footer-contact">📱 @uniagro.brasil</div>
+            <div class="footer-copyright">
+                &copy; 2025 UNIAGRO Brasil. Todos os direitos reservados.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

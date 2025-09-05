@@ -82,8 +82,198 @@
   button {
     padding: 12px 16px;
     min-height: 44px;
-    width: 100%;
     box-sizing: border-box;
+  }
+  
+  /* Header buttons should not be full width */
+  header button {
+    width: auto;
+    min-width: 44px;
+  }
+  
+  /* Mobile tabs improvements - simplified and fixed */
+  .mobile-tabs {
+    background: #f3f4f6 !important;
+    padding: 4px !important;
+    border-radius: 8px !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 4px !important;
+    width: 100% !important;
+    position: relative !important;
+  }
+  
+  .mobile-tab-trigger {
+    min-height: 48px !important;
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    border: none !important;
+    outline: none !important;
+  }
+  
+  .mobile-tab-trigger[data-state="active"] {
+    background: #16a34a !important;
+    color: white !important;
+    box-shadow: 0 2px 4px rgba(22, 163, 74, 0.3) !important;
+  }
+  
+  .mobile-tab-trigger[data-state="inactive"] {
+    background: transparent !important;
+    color: #6b7280 !important;
+  }
+  
+  .mobile-tab-trigger:hover:not([data-state="active"]) {
+    background: #e5e7eb !important;
+    color: #374151 !important;
+  }
+  
+  .mobile-tab-trigger[data-state="active"]:hover {
+    background: #15803d !important;
+    color: white !important;
+  }
+  
+  /* Ensure icons are visible and properly sized */
+  .mobile-tab-trigger svg {
+    width: 16px !important;
+    height: 16px !important;
+    flex-shrink: 0 !important;
+    display: inline-block !important;
+  }
+  
+  .mobile-tab-trigger span {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    display: inline-block !important;
+  }
+  
+  /* Override any conflicting styles */
+  .mobile-tab-trigger * {
+    position: static !important;
+    z-index: auto !important;
+  }
+  
+  /* Fix form labels and inputs on mobile - completely clean */
+  .space-y-2 label {
+    display: block !important;
+    font-weight: 600 !important;
+    color: #374151 !important;
+    margin-bottom: 4px !important;
+    font-size: 14px !important;
+    background: transparent !important;
+    position: static !important;
+    z-index: auto !important;
+  }
+  
+  .space-y-2 input {
+    width: 100% !important;
+    padding: 12px 16px 12px 40px !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 6px !important;
+    font-size: 16px !important;
+    background: white !important;
+    color: #374151 !important;
+    position: relative !important;
+    z-index: 1 !important;
+    box-shadow: none !important;
+  }
+  
+  .space-y-2 input::placeholder {
+    color: #9ca3af !important;
+    opacity: 1 !important;
+    background: transparent !important;
+  }
+  
+  .space-y-2 input:focus {
+    border-color: #16a34a !important;
+    box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.1) !important;
+    outline: none !important;
+    background: white !important;
+  }
+  
+  /* Fix input container to prevent any background issues */
+  .space-y-2 .relative {
+    position: relative !important;
+    background: transparent !important;
+  }
+  
+  .space-y-2 .relative svg {
+    color: #9ca3af !important;
+    z-index: 2 !important;
+    position: absolute !important;
+    left: 12px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 16px !important;
+    height: 16px !important;
+    pointer-events: none !important;
+  }
+  
+  /* Override any potential green backgrounds on form elements */
+  .space-y-2 * {
+    background: transparent !important;
+  }
+  
+  .space-y-2 input,
+  .space-y-2 input:focus,
+  .space-y-2 input:active {
+    background: white !important;
+    background-color: white !important;
+  }
+  
+  /* Ensure no green highlights anywhere in form */
+  .space-y-2 input::before,
+  .space-y-2 input::after {
+    display: none !important;
+  }
+  
+  /* Force clean input styling - override everything */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    background: white !important;
+    background-color: white !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border: 1px solid #d1d5db !important;
+    padding-left: 40px !important;
+    padding-right: 16px !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+  
+  input[type="text"]::placeholder,
+  input[type="email"]::placeholder,
+  input[type="password"]::placeholder {
+    color: #9ca3af !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+  
+  /* Ensure icons don't interfere with text input */
+  .space-y-2 .relative {
+    position: relative !important;
+    display: block !important;
+  }
+  
+  .space-y-2 .relative input {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
+  .space-y-2 .relative svg {
+    position: absolute !important;
+    z-index: 2 !important;
+    pointer-events: none !important;
   }
   
   /* Better navigation buttons layout */
@@ -167,6 +357,293 @@
     font-weight: 600;
     margin-bottom: 0.5rem;
     display: block;
+  }
+  
+  /* Mobile Select optimizations - Enhanced */
+  
+  /* Override all select triggers on mobile */
+  [data-radix-select-trigger] {
+    min-height: 56px !important;
+    padding: 16px 20px !important;
+    font-size: 18px !important;
+    border: 2px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    background: white !important;
+    color: #1f2937 !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    font-weight: 500 !important;
+  }
+  
+  [data-radix-select-trigger]:hover {
+    border-color: #16a34a !important;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15) !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  [data-radix-select-trigger]:focus {
+    outline: none !important;
+    border-color: #16a34a !important;
+    box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1) !important;
+  }
+  
+  [data-radix-select-trigger][data-state="open"] {
+    border-color: #16a34a !important;
+    box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1) !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  /* Select content dropdown */
+  [data-radix-select-content] {
+    z-index: 99999 !important;
+    max-height: 320px !important;
+    overflow-y: auto !important;
+    border: 2px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    background: white !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+    margin-top: 8px !important;
+    padding: 8px !important;
+  }
+  
+  /* Select items */
+  [data-radix-select-item] {
+    padding: 16px 20px !important;
+    font-size: 18px !important;
+    color: #1f2937 !important;
+    cursor: pointer !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+    min-height: 56px !important;
+    display: flex !important;
+    align-items: center !important;
+    margin-bottom: 4px !important;
+    font-weight: 500 !important;
+  }
+  
+  [data-radix-select-item]:hover {
+    background-color: #f3f4f6 !important;
+    transform: translateX(4px) !important;
+  }
+  
+  [data-radix-select-item][data-highlighted] {
+    background-color: #16a34a !important;
+    color: white !important;
+    transform: translateX(4px) !important;
+  }
+  
+  [data-radix-select-item][data-state="checked"] {
+    background-color: #dcfce7 !important;
+    color: #16a34a !important;
+    font-weight: 700 !important;
+    border: 2px solid #16a34a !important;
+  }
+  
+  [data-radix-select-item]:last-child {
+    margin-bottom: 0 !important;
+  }
+  
+  /* Select placeholder */
+  [data-radix-select-value] {
+    color: #6b7280 !important;
+    font-size: 18px !important;
+    font-weight: 500 !important;
+  }
+  
+  /* Select chevron icon */
+  [data-radix-select-trigger] svg {
+    color: #6b7280 !important;
+    width: 24px !important;
+    height: 24px !important;
+    transition: transform 0.3s ease !important;
+    flex-shrink: 0 !important;
+  }
+  
+  [data-radix-select-trigger][data-state="open"] svg {
+    transform: rotate(180deg) !important;
+    color: #16a34a !important;
+  }
+  
+  /* Ensure proper positioning */
+  [data-radix-popper-content-wrapper] {
+    z-index: 99999 !important;
+  }
+  
+  /* Prevent text selection */
+  [data-radix-select-item] {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+  }
+  
+  /* Select labels */
+  .mobile-select-label,
+  label[for*="sexo"],
+  label[for*="estadoCivil"],
+  label[for*="corPele"] {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #1f2937 !important;
+    margin-bottom: 12px !important;
+    display: block !important;
+  }
+  
+  /* Better spacing for select containers */
+  .space-y-2 > div:has([data-radix-select-trigger]) {
+    margin-bottom: 24px !important;
+  }
+  
+  /* Override any conflicting styles */
+  .mobile-select-trigger,
+  .mobile-select-content,
+  .mobile-select-item {
+    all: unset !important;
+  }
+  
+  /* Force mobile select styles */
+  .mobile-select-trigger {
+    min-height: 56px !important;
+    padding: 16px 20px !important;
+    font-size: 18px !important;
+    border: 2px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    background: white !important;
+    color: #1f2937 !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    font-weight: 500 !important;
+  }
+  
+  .mobile-select-content {
+    z-index: 99999 !important;
+    max-height: 320px !important;
+    overflow-y: auto !important;
+    border: 2px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    background: white !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+    margin-top: 8px !important;
+    padding: 8px !important;
+  }
+  
+  .mobile-select-item {
+    padding: 16px 20px !important;
+    font-size: 18px !important;
+    color: #1f2937 !important;
+    cursor: pointer !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+    min-height: 56px !important;
+    display: flex !important;
+    align-items: center !important;
+    margin-bottom: 4px !important;
+    font-weight: 500 !important;
+  }
+  
+  /* Enhanced Mobile Select Component Styles */
+  .mobile-select-trigger {
+    min-height: 56px !important;
+    padding: 16px 20px !important;
+    font-size: 18px !important;
+    font-weight: 500 !important;
+    border: 2px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    background: white !important;
+    color: #1f2937 !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    margin-top: 8px !important;
+  }
+  
+  .mobile-select-trigger:hover {
+    border-color: #16a34a !important;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15) !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  .mobile-select-trigger:focus {
+    outline: none !important;
+    border-color: #16a34a !important;
+    box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1) !important;
+  }
+  
+  .mobile-select-content {
+    z-index: 99999 !important;
+    max-height: 320px !important;
+    overflow-y: auto !important;
+    border: 2px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    background: white !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+    margin-top: 8px !important;
+    padding: 8px !important;
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+  }
+  
+  .mobile-select-item {
+    padding: 16px 20px !important;
+    font-size: 18px !important;
+    color: #1f2937 !important;
+    cursor: pointer !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+    min-height: 56px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 4px !important;
+    font-weight: 500 !important;
+    width: 100% !important;
+    border: none !important;
+    background: transparent !important;
+  }
+  
+  .mobile-select-item:hover {
+    background-color: #f3f4f6 !important;
+    transform: translateX(4px) !important;
+  }
+  
+  .mobile-select-item:focus {
+    outline: none !important;
+    background-color: #f9fafb !important;
+  }
+  
+  .mobile-select-placeholder {
+    color: #6b7280 !important;
+    font-size: 18px !important;
+    font-weight: 500 !important;
+  }
+  
+  /* Override any conflicting styles */
+  .mobile-select-trigger * {
+    box-sizing: border-box !important;
+  }
+  
+  .mobile-select-content * {
+    box-sizing: border-box !important;
+  }
+  
+  .mobile-select-item * {
+    box-sizing: border-box !important;
   }
 }
 
