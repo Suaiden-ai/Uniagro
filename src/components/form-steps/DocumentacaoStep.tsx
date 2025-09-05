@@ -139,9 +139,60 @@ export const DocumentacaoStep = ({ data, onNext, onPrevious, onSave, onFinish, i
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
-    if (validateForm()) {
+  const handleNext = async () => {
+    console.log(`➡️ [${isMobile ? 'MOBILE' : 'DESKTOP'}] handleNext iniciado`);
+    
+    if (!validateForm()) {
+      console.log('❌ Formulário inválido - não prosseguindo');
+      return;
+    }
+    
+    // Se não tem userId ou não tem arquivos para upload, só valida e segue
+    if (!userId || (!formData.anexos.rgFile && !formData.anexos.cpfFile)) {
+      console.log('📝 Sem upload necessário - prosseguindo direto');
       onNext(formData);
+      return;
+    }
+    
+    console.log('📤 Upload necessário - fazendo upload antes de prosseguir');
+    setIsUploading(true);
+    
+    try {
+      console.log('📡 Chamando saveDocumentacaoWithFiles no handleNext...');
+      const result = await saveDocumentacaoWithFiles(
+        userId,
+        formData,
+        formData.anexos.rgFile,
+        formData.anexos.cpfFile
+      );
+      
+      console.log('🔄 Resultado do upload no handleNext:', result);
+      
+      if (result.success) {
+        console.log('✅ Upload realizado com sucesso - prosseguindo');
+        toast({
+          title: "Documentos salvos!",
+          description: "Documentos enviados com sucesso",
+        });
+        onNext(formData);
+      } else {
+        console.log('❌ Erro no upload:', result.error);
+        toast({
+          title: "Erro no upload",
+          description: result.error || "Erro ao salvar documentos. Tente novamente.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error(`💥 [${isMobile ? 'MOBILE' : 'DESKTOP'}] Exceção no handleNext:`, error);
+      toast({
+        title: "Erro",
+        description: "Erro interno ao salvar documentos",
+        variant: "destructive"
+      });
+    } finally {
+      console.log('🔚 Finalizando handleNext process...');
+      setIsUploading(false);
     }
   };
 
@@ -440,9 +491,22 @@ export const DocumentacaoStep = ({ data, onNext, onPrevious, onSave, onFinish, i
               Finalizar
             </Button>
           ) : (
-            <Button onClick={handleNext} className="bg-green-600 hover:bg-green-700">
-              Próxima
-              <ArrowRight className="h-4 w-4 ml-2" />
+            <Button 
+              onClick={handleNext} 
+              className="bg-green-600 hover:bg-green-700"
+              disabled={isUploading}
+            >
+              {isUploading ? (
+                <>
+                  <Upload className="h-4 w-4 mr-2 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  Próxima
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </>
+              )}
             </Button>
           )}
         </div>
