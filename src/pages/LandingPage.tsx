@@ -147,7 +147,7 @@ const LandingPage = () => {
                 variant="outline" 
                 asChild 
                 size="sm" 
-                className="hidden sm:inline-flex border-white/30 text-white bg-[#2E7D32]/90 hover:bg-[#2E7D32] hover:text-white transition-all duration-300 backdrop-blur-sm"
+                className="inline-flex border-white/30 text-white bg-[#2E7D32]/90 hover:bg-[#2E7D32] hover:text-white transition-all duration-300 backdrop-blur-sm text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2"
               >
                 <Link to="/login">Acessar Plataforma</Link>
               </Button>

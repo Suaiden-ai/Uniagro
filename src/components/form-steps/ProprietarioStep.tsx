@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MobileSelect, MobileSelectTrigger, MobileSelectContent, MobileSelectItem, MobileSelectValue } from '@/components/ui/mobile-select';
 import { ArrowLeft, ArrowRight, Save, CheckSquare } from 'lucide-react';
 
 interface ProprietarioData {
@@ -53,6 +54,8 @@ const ESTADO_CIVIL_OPTIONS = [
 ];
 
 export const ProprietarioStep = ({ data, onNext, onPrevious, onSave, onFinish, isFirst, isLast }: ProprietarioStepProps) => {
+  const [isMobile, setIsMobile] = useState(false);
+  
   const [formData, setFormData] = useState<ProprietarioData>({
     nome: data.nome || '',
     sexo: data.sexo || '',
@@ -66,6 +69,17 @@ export const ProprietarioStep = ({ data, onNext, onPrevious, onSave, onFinish, i
     telefone: data.telefone || '',
   });
 
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const updateFormData = (field: keyof ProprietarioData, value: string) => {
@@ -74,6 +88,40 @@ export const ProprietarioStep = ({ data, onNext, onPrevious, onSave, onFinish, i
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
+  };
+
+  const renderSelect = (field: keyof ProprietarioData, options: Array<{value: string, label: string}>, placeholder: string) => {
+    if (isMobile) {
+      return (
+        <MobileSelect value={formData[field]} onValueChange={(value) => updateFormData(field, value)}>
+          <MobileSelectTrigger>
+            <MobileSelectValue placeholder={placeholder} />
+          </MobileSelectTrigger>
+          <MobileSelectContent>
+            {options.map((option) => (
+              <MobileSelectItem key={option.value} value={option.value}>
+                {option.label}
+              </MobileSelectItem>
+            ))}
+          </MobileSelectContent>
+        </MobileSelect>
+      );
+    }
+
+    return (
+      <Select value={formData[field]} onValueChange={(value) => updateFormData(field, value)}>
+        <SelectTrigger className="mobile-select-trigger mt-2">
+          <SelectValue placeholder={placeholder} className="mobile-select-placeholder" />
+        </SelectTrigger>
+        <SelectContent className="mobile-select-content">
+          {options.map((option) => (
+            <SelectItem key={option.value} value={option.value} className="mobile-select-item">
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
   };
 
   const formatPhone = (value: string) => {
@@ -145,19 +193,8 @@ export const ProprietarioStep = ({ data, onNext, onPrevious, onSave, onFinish, i
 
         {/* Estado Civil */}
         <div>
-          <Label className="text-base font-semibold">Estado Civil</Label>
-          <Select value={formData.estadoCivil} onValueChange={(value) => updateFormData('estadoCivil', value)}>
-            <SelectTrigger className="mt-2 h-12">
-              <SelectValue placeholder="Selecione o estado civil" />
-            </SelectTrigger>
-            <SelectContent>
-              {ESTADO_CIVIL_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Label className="mobile-select-label">Estado Civil</Label>
+          {renderSelect('estadoCivil', ESTADO_CIVIL_OPTIONS, 'Selecione o estado civil')}
         </div>
 
         {/* Telefone */}
@@ -177,36 +214,14 @@ export const ProprietarioStep = ({ data, onNext, onPrevious, onSave, onFinish, i
 
         {/* Sexo */}
         <div>
-          <Label className="text-base font-semibold">Sexo</Label>
-          <Select value={formData.sexo} onValueChange={(value) => updateFormData('sexo', value)}>
-            <SelectTrigger className="mt-2 h-12">
-              <SelectValue placeholder="Selecione o sexo" />
-            </SelectTrigger>
-            <SelectContent>
-              {SEXO_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Label className="mobile-select-label">Sexo</Label>
+          {renderSelect('sexo', SEXO_OPTIONS, 'Selecione o sexo')}
         </div>
 
         {/* Cor da Pele */}
         <div>
-          <Label className="text-base font-semibold">Cor da Pele</Label>
-          <Select value={formData.corPele} onValueChange={(value) => updateFormData('corPele', value)}>
-            <SelectTrigger className="mt-2 h-12">
-              <SelectValue placeholder="Selecione a cor da pele" />
-            </SelectTrigger>
-            <SelectContent>
-              {COR_PELE_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Label className="mobile-select-label">Cor da Pele</Label>
+          {renderSelect('corPele', COR_PELE_OPTIONS, 'Selecione a cor da pele')}
         </div>
 
         {/* Religião */}
