@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MobileSelect, MobileSelectContent, MobileSelectItem, MobileSelectTrigger, MobileSelectValue } from '@/components/ui/mobile-select';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
 
 interface InfraestruturaData {
@@ -39,6 +41,7 @@ interface InfraestruturaStepProps {
 }
 
 export const InfraestruturaStep = ({ data, onNext, onPrevious, onSave, isFirst }: InfraestruturaStepProps) => {
+  const isMobile = useIsMobile();
   const [formData, setFormData] = useState<InfraestruturaData>({
     temReserva: data.temReserva || false,
     areaReserva: data.areaReserva || 0,
@@ -71,6 +74,88 @@ export const InfraestruturaStep = ({ data, onNext, onPrevious, onSave, isFirst }
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
+  };
+
+  const renderSelect = (field: keyof InfraestruturaData, options: Array<{value: string, label: string}>, placeholder: string, value: string) => {
+    if (isMobile) {
+      return (
+        <MobileSelect value={value} onValueChange={(newValue) => {
+          if (field === 'temReserva') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'temEstrada') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'temEnergia') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'temAgua') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'aguaEncanada') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'possuiGalpao') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'possuiSilo') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'reservatorioAgua') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'energiaFotovoltaica') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'sistemaIrrigacao') {
+            updateFormData(field, newValue === 'sim');
+          } else {
+            updateFormData(field, newValue);
+          }
+        }}>
+          <MobileSelectTrigger>
+            <MobileSelectValue placeholder={placeholder} />
+          </MobileSelectTrigger>
+          <MobileSelectContent>
+            {options.map((option) => (
+              <MobileSelectItem key={option.value} value={option.value}>
+                {option.label}
+              </MobileSelectItem>
+            ))}
+          </MobileSelectContent>
+        </MobileSelect>
+      );
+    }
+
+    return (
+      <Select value={value} onValueChange={(newValue) => {
+        if (field === 'temReserva') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'temEstrada') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'temEnergia') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'temAgua') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'aguaEncanada') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'possuiGalpao') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'possuiSilo') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'reservatorioAgua') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'energiaFotovoltaica') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'sistemaIrrigacao') {
+          updateFormData(field, newValue === 'sim');
+        } else {
+          updateFormData(field, newValue);
+        }
+      }}>
+        <SelectTrigger className="mobile-select-trigger mt-2 h-12">
+          <SelectValue placeholder={placeholder} className="mobile-select-placeholder" />
+        </SelectTrigger>
+        <SelectContent className="mobile-select-content">
+          {options.map((option) => (
+            <SelectItem key={option.value} value={option.value} className="mobile-select-item">
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
   };
 
   const validateForm = (): boolean => {

@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MobileSelect, MobileSelectContent, MobileSelectItem, MobileSelectTrigger, MobileSelectValue } from '@/components/ui/mobile-select';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
 
 interface ComunicacaoData {
@@ -28,6 +30,7 @@ interface ComunicacaoStepProps {
 }
 
 export const ComunicacaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: ComunicacaoStepProps) => {
+  const isMobile = useIsMobile();
   const [formData, setFormData] = useState<ComunicacaoData>({
     temSinalCelular: data.temSinalCelular || false,
     operadoraCelular: data.operadoraCelular || '',
@@ -49,6 +52,60 @@ export const ComunicacaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: C
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
+  };
+
+  const renderSelect = (field: keyof ComunicacaoData, options: Array<{value: string, label: string}>, placeholder: string, value: string) => {
+    if (isMobile) {
+      return (
+        <MobileSelect value={value} onValueChange={(newValue) => {
+          if (field === 'temSinalCelular') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'temSinalInternet') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'temSinalRadio') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'temSinalTV') {
+            updateFormData(field, newValue === 'sim');
+          }
+        }}>
+          <MobileSelectTrigger>
+            <MobileSelectValue placeholder={placeholder} />
+          </MobileSelectTrigger>
+          <MobileSelectContent>
+            {options.map((option) => (
+              <MobileSelectItem key={option.value} value={option.value}>
+                {option.label}
+              </MobileSelectItem>
+            ))}
+          </MobileSelectContent>
+        </MobileSelect>
+      );
+    }
+
+    return (
+      <Select value={value} onValueChange={(newValue) => {
+        if (field === 'temSinalCelular') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'temSinalInternet') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'temSinalRadio') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'temSinalTV') {
+          updateFormData(field, newValue === 'sim');
+        }
+      }}>
+        <SelectTrigger className="mobile-select-trigger mt-2 h-12">
+          <SelectValue placeholder={placeholder} className="mobile-select-placeholder" />
+        </SelectTrigger>
+        <SelectContent className="mobile-select-content">
+          {options.map((option) => (
+            <SelectItem key={option.value} value={option.value} className="mobile-select-item">
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
   };
 
   const validateForm = (): boolean => {
@@ -103,18 +160,15 @@ export const ComunicacaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: C
           
           <div>
             <Label className="text-base font-semibold">Tem sinal de celular?</Label>
-            <Select
-              value={formData.temSinalCelular ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('temSinalCelular', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'temSinalCelular',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.temSinalCelular ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.temSinalCelular && (
@@ -140,18 +194,15 @@ export const ComunicacaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: C
           
           <div>
             <Label className="text-base font-semibold">Tem sinal de internet?</Label>
-            <Select
-              value={formData.temSinalInternet ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('temSinalInternet', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'temSinalInternet',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.temSinalInternet ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.temSinalInternet && (
@@ -177,18 +228,15 @@ export const ComunicacaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: C
           
           <div>
             <Label className="text-base font-semibold">Tem sinal de rádio?</Label>
-            <Select
-              value={formData.temSinalRadio ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('temSinalRadio', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'temSinalRadio',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.temSinalRadio ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.temSinalRadio && (
@@ -228,18 +276,15 @@ export const ComunicacaoStep = ({ data, onNext, onPrevious, onSave, isFirst }: C
           
           <div>
             <Label className="text-base font-semibold">Tem sinal de TV?</Label>
-            <Select
-              value={formData.temSinalTV ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('temSinalTV', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'temSinalTV',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.temSinalTV ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.temSinalTV && (
