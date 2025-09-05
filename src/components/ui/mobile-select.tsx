@@ -83,16 +83,53 @@ export const MobileSelectTrigger = ({ children, className }: MobileSelectTrigger
 
 export const MobileSelectContent = ({ children, className }: MobileSelectContentProps) => {
   const { isOpen } = React.useContext(MobileSelectContext)
+  const [dropdownPosition, setDropdownPosition] = React.useState<'bottom' | 'top'>('bottom')
+  const contentRef = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    if (isOpen && contentRef.current) {
+      const updatePosition = () => {
+        const parentElement = contentRef.current?.closest('.mobile-select-trigger')?.parentElement
+        if (parentElement) {
+          const rect = parentElement.getBoundingClientRect()
+          const viewportHeight = window.innerHeight
+          const spaceBelow = viewportHeight - rect.bottom
+          const spaceAbove = rect.top
+          
+          // Se não há espaço suficiente embaixo (menos de 250px) e há mais espaço acima
+          if (spaceBelow < 250 && spaceAbove > spaceBelow) {
+            setDropdownPosition('top')
+          } else {
+            setDropdownPosition('bottom')
+          }
+        }
+      }
+      
+      updatePosition()
+      // Atualizar posição ao fazer scroll
+      window.addEventListener('scroll', updatePosition, { passive: true })
+      window.addEventListener('resize', updatePosition, { passive: true })
+      
+      return () => {
+        window.removeEventListener('scroll', updatePosition)
+        window.removeEventListener('resize', updatePosition)
+      }
+    }
+  }, [isOpen])
 
   if (!isOpen) return null
 
   return (
     <div
+      ref={contentRef}
       className={cn(
-        "mobile-select-content absolute top-full left-0 right-0 z-50 mt-2 max-w-full",
+        "mobile-select-content absolute z-50 mt-2 max-w-full",
         "bg-white border-2 border-gray-200 rounded-xl shadow-2xl",
         "max-h-80 overflow-y-auto box-border",
         "animate-in fade-in-0 zoom-in-95 duration-200",
+        dropdownPosition === 'top' ? 
+          'bottom-full mb-2 dropdown-upward' : 
+          'top-full left-0 right-0',
         className
       )}
     >

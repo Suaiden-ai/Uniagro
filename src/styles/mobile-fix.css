@@ -643,6 +643,8 @@
     box-sizing: border-box !important;
   }
   
+  /* Special handling for dropdowns at the bottom of the page */
+  
   .mobile-select-item {
     padding: 8px 12px !important;
     font-size: 14px !important;
@@ -820,8 +822,6 @@ header img {
   .card {
     max-width: 100% !important;
     box-sizing: border-box !important;
-    overflow-x: hidden !important;
-    overflow-y: visible !important;
   }
   
   /* Ensure all form elements stay within bounds */
@@ -832,28 +832,5 @@ header img {
   .card > * {
     max-width: 100% !important;
     box-sizing: border-box !important;
-  }
-  
-  /* Special handling for select containers to allow dropdowns */
-  .space-y-4 > div:has([data-radix-select-content]),
-  .space-y-8 > div:has([data-radix-select-content]),
-  .bg-gray-50 > div:has([data-radix-select-content]),
-  .space-y-4 > div:has(.mobile-select-content),
-  .space-y-8 > div:has(.mobile-select-content),
-  .bg-gray-50 > div:has(.mobile-select-content) {
-    overflow: visible !important;
-    position: relative !important;
-    z-index: auto !important;
-  }
-  
-  /* Ensure dropdown containers have proper stacking context */
-  .space-y-4 > div:has([data-radix-select-trigger]),
-  .space-y-8 > div:has([data-radix-select-trigger]),
-  .bg-gray-50 > div:has([data-radix-select-trigger]),
-  .space-y-4 > div:has(.mobile-select-trigger),
-  .space-y-8 > div:has(.mobile-select-trigger),
-  .bg-gray-50 > div:has(.mobile-select-trigger) {
-    overflow: visible !important;
-    position: relative !important;
   }
 }
