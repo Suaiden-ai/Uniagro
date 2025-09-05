@@ -8,6 +8,8 @@ import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, ArrowRight, FileText, Upload, Save, CheckSquare } from 'lucide-react';
 import { saveDocumentacaoWithFiles } from '@/services/database';
 import { toast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { debugFileUpload, simulateUpload } from '@/utils/mobile-file-debug';
 
 interface DocumentacaoData {
   rg: string;
@@ -36,6 +38,8 @@ interface DocumentacaoStepProps {
 }
 
 export const DocumentacaoStep = ({ data, onNext, onPrevious, onSave, onFinish, isFirst, isLast, userId }: DocumentacaoStepProps) => {
+  const isMobile = useIsMobile();
+  
   const [formData, setFormData] = useState<DocumentacaoData>({
     rg: data.rg || '',
     cpf: data.cpf || '',
@@ -64,6 +68,17 @@ export const DocumentacaoStep = ({ data, onNext, onPrevious, onSave, onFinish, i
 
   // Função específica para atualizar anexos
   const updateAnexos = (field: keyof DocumentacaoData['anexos'], files: File[]) => {
+    console.log(`📱 [${isMobile ? 'MOBILE' : 'DESKTOP'}] updateAnexos called:`, {
+      field,
+      filesCount: files.length,
+      files: files.map(f => ({ name: f.name, size: f.size, type: f.type }))
+    });
+    
+    // Debug detalhado para cada arquivo
+    files.forEach((file, index) => {
+      console.log(`📄 Arquivo ${index + 1}:`, debugFileUpload(file, `${field} - updateAnexos`));
+    });
+    
     setFormData(prev => ({
       ...prev,
       anexos: {
@@ -132,7 +147,10 @@ export const DocumentacaoStep = ({ data, onNext, onPrevious, onSave, onFinish, i
 
   // Função específica para salvar com upload de documentos
   const handleSaveWithUpload = async () => {
+    console.log(`🚀 [${isMobile ? 'MOBILE' : 'DESKTOP'}] handleSaveWithUpload iniciado`);
+    
     if (!userId) {
+      console.log('❌ Usuário não identificado');
       toast({
         title: "Erro",
         description: "Usuário não identificado para upload",
@@ -141,7 +159,32 @@ export const DocumentacaoStep = ({ data, onNext, onPrevious, onSave, onFinish, i
       return;
     }
 
+    console.log('👤 UserID:', userId);
+    console.log('📋 FormData:', formData);
+    console.log('📄 Arquivos:', {
+      rgFile: formData.anexos.rgFile ? { name: formData.anexos.rgFile.name, size: formData.anexos.rgFile.size } : null,
+      cpfFile: formData.anexos.cpfFile ? { name: formData.anexos.cpfFile.name, size: formData.anexos.cpfFile.size } : null
+    });
+    
+    // Debug dos arquivos
+    if (formData.anexos.rgFile) {
+      console.log('🔍 Debug RG File:');
+      debugFileUpload(formData.anexos.rgFile, 'handleSaveWithUpload - RG');
+      
+      const rgTestResult = await simulateUpload(formData.anexos.rgFile);
+      console.log('🧪 RG Simulation Result:', rgTestResult);
+    }
+    
+    if (formData.anexos.cpfFile) {
+      console.log('🔍 Debug CPF File:');
+      debugFileUpload(formData.anexos.cpfFile, 'handleSaveWithUpload - CPF');
+      
+      const cpfTestResult = await simulateUpload(formData.anexos.cpfFile);
+      console.log('🧪 CPF Simulation Result:', cpfTestResult);
+    }
+
     if (!validateForm()) {
+      console.log('❌ Formulário inválido');
       toast({
         title: "Erro de validação",
         description: "Corrija os erros do formulário antes de salvar",
@@ -150,9 +193,11 @@ export const DocumentacaoStep = ({ data, onNext, onPrevious, onSave, onFinish, i
       return;
     }
 
+    console.log('✅ Formulário válido, iniciando upload...');
     setIsUploading(true);
     
     try {
+      console.log('📡 Chamando saveDocumentacaoWithFiles...');
       const result = await saveDocumentacaoWithFiles(
         userId,
         formData,
@@ -160,7 +205,10 @@ export const DocumentacaoStep = ({ data, onNext, onPrevious, onSave, onFinish, i
         formData.anexos.cpfFile
       );
       
+      console.log('🔄 Resultado do saveDocumentacaoWithFiles:', result);
+      
       if (result.success) {
+        console.log('✅ Upload realizado com sucesso!');
         toast({
           title: "Sucesso!",
           description: "Documentos salvos e enviados com sucesso",
@@ -171,6 +219,7 @@ export const DocumentacaoStep = ({ data, onNext, onPrevious, onSave, onFinish, i
           onSave(formData);
         }
       } else {
+        console.log('❌ Erro no upload:', result.error);
         toast({
           title: "Erro no upload",
           description: result.error || "Erro ao salvar documentos",
@@ -178,13 +227,15 @@ export const DocumentacaoStep = ({ data, onNext, onPrevious, onSave, onFinish, i
         });
       }
     } catch (error) {
-      console.error('Erro no upload:', error);
+      console.error(`💥 [${isMobile ? 'MOBILE' : 'DESKTOP'}] Exceção capturada no upload:`, error);
+      console.error('Stack trace:', error instanceof Error ? error.stack : 'N/A');
       toast({
         title: "Erro",
         description: "Erro interno ao salvar documentos",
         variant: "destructive"
       });
     } finally {
+      console.log('🔚 Finalizando upload process...');
       setIsUploading(false);
     }
   };

@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Upload, X, File, CheckCircle, AlertCircle } from 'lucide-react';
 import { Label } from '@/components/ui/label';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { debugFileUpload, debugFileInput } from '@/utils/mobile-file-debug';
 
 interface FileUploadProps {
   id: string;
@@ -29,8 +31,11 @@ export const FileUpload = ({
   required = false,
   error
 }: FileUploadProps) => {
+  const isMobile = useIsMobile();
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  console.log(`📱 [${isMobile ? 'MOBILE' : 'DESKTOP'}] FileUpload renderizado para ID: ${id}`);
 
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes';
@@ -58,25 +63,35 @@ export const FileUpload = ({
   };
 
   const handleFiles = (newFiles: FileList | File[]) => {
+    console.log(`📂 [${isMobile ? 'MOBILE' : 'DESKTOP'}] handleFiles - ID: ${id}`);
+    console.log('📄 Arquivos recebidos:', newFiles);
+    console.log('📄 Número de arquivos:', newFiles.length);
+    
+    debugFileInput(inputRef.current);
+    
     const fileArray = Array.from(newFiles);
     const validFiles: File[] = [];
     let hasError = false;
 
-    fileArray.forEach(file => {
+    fileArray.forEach((file, index) => {
+      console.log(`📄 Processando arquivo ${index + 1}:`, debugFileUpload(file, `${id} - handleFiles`));
+      
       const error = validateFile(file);
       if (!error) {
         validFiles.push(file);
+        console.log(`✅ Arquivo ${file.name} válido`);
       } else {
         hasError = true;
-        console.warn(`Erro no arquivo ${file.name}: ${error}`);
+        console.warn(`❌ Erro no arquivo ${file.name}: ${error}`);
       }
     });
 
-    if (multiple) {
-      onFilesChange([...files, ...validFiles]);
-    } else {
-      onFilesChange(validFiles.slice(0, 1));
-    }
+    console.log(`📊 Resultado da validação - Válidos: ${validFiles.length}, Erros: ${hasError}`);
+    
+    const finalFiles = multiple ? [...files, ...validFiles] : validFiles.slice(0, 1);
+    console.log(`🔄 Chamando onFilesChange com ${finalFiles.length} arquivos`);
+    
+    onFilesChange(finalFiles);
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -101,8 +116,16 @@ export const FileUpload = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
+    console.log(`🔄 [${isMobile ? 'MOBILE' : 'DESKTOP'}] handleChange triggered - ID: ${id}`);
+    console.log('🎯 Input target:', e.target);
+    console.log('📁 Target files:', e.target.files);
+    console.log('📊 Files length:', e.target.files?.length || 0);
+    
     if (e.target.files && e.target.files[0]) {
+      console.log('✅ Files detected, calling handleFiles...');
       handleFiles(e.target.files);
+    } else {
+      console.log('❌ No files detected in change event');
     }
   };
 
@@ -112,7 +135,16 @@ export const FileUpload = ({
   };
 
   const openFileDialog = () => {
-    inputRef.current?.click();
+    console.log(`🎯 [${isMobile ? 'MOBILE' : 'DESKTOP'}] openFileDialog clicked - ID: ${id}`);
+    console.log('📄 Input ref current:', inputRef.current);
+    
+    if (inputRef.current) {
+      console.log('✅ Input ref available, triggering click...');
+      debugFileInput(inputRef.current);
+      inputRef.current.click();
+    } else {
+      console.log('❌ Input ref não disponível');
+    }
   };
 
   return (
