@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MobileSelect, MobileSelectTrigger, MobileSelectContent, MobileSelectItem, MobileSelectValue } from '@/components/ui/mobile-select';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { ArrowLeft, ArrowRight, Save, CheckSquare } from 'lucide-react';
 
 interface ProprietarioData {
@@ -54,7 +55,7 @@ const ESTADO_CIVIL_OPTIONS = [
 ];
 
 export const ProprietarioStep = ({ data, onNext, onPrevious, onSave, onFinish, isFirst, isLast }: ProprietarioStepProps) => {
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useIsMobile();
   
   const [formData, setFormData] = useState<ProprietarioData>({
     nome: data.nome || '',
@@ -69,16 +70,6 @@ export const ProprietarioStep = ({ data, onNext, onPrevious, onSave, onFinish, i
     telefone: data.telefone || '',
   });
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 

@@ -1109,7 +1109,15 @@ export const MultiStepForm = ({
 
             {/* Sidebar Mobile - Overlay */}
             {isMobile && isSidebarOpen && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
+              <div 
+                className="fixed inset-0 bg-black bg-opacity-50 z-50"
+                onClick={(e) => {
+                  // Fecha o menu se clicar no overlay (fora do conteúdo)
+                  if (e.target === e.currentTarget) {
+                    setIsSidebarOpen(false);
+                  }
+                }}
+              >
                 <div className="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white overflow-y-auto">
                   <div className="flex items-center justify-between p-4 border-b">
                     <h2 className="text-lg font-semibold">Etapas do Questionário</h2>

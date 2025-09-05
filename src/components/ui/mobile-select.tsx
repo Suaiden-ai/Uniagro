@@ -58,8 +58,8 @@ export const MobileSelectTrigger = ({ children, className }: MobileSelectTrigger
       type="button"
       className={cn(
         "mobile-select-trigger w-full flex items-center justify-between",
-        "min-h-[56px] px-5 py-4 text-lg font-medium",
-        "border-2 border-gray-200 rounded-xl",
+        "min-h-[36px] px-3 py-2 text-sm font-medium",
+        "border border-gray-200 rounded",
         "bg-white text-gray-900",
         "hover:border-green-500 hover:shadow-lg hover:-translate-y-0.5",
         "focus:outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100",
@@ -73,7 +73,7 @@ export const MobileSelectTrigger = ({ children, className }: MobileSelectTrigger
       {children}
       <ChevronDown 
         className={cn(
-          "w-6 h-6 text-gray-500 transition-transform duration-300",
+          "w-3.5 h-3.5 text-gray-500 transition-transform duration-300",
           isOpen && "rotate-180 text-green-500"
         )} 
       />
@@ -112,8 +112,8 @@ export const MobileSelectItem = ({ value, children, className }: MobileSelectIte
       type="button"
       className={cn(
         "mobile-select-item w-full flex items-center justify-between",
-        "min-h-[56px] px-5 py-4 text-lg font-medium",
-        "rounded-lg transition-all duration-200",
+        "min-h-[36px] px-3 py-2 text-sm font-medium",
+        "rounded transition-all duration-200",
         "hover:bg-gray-50 hover:translate-x-1",
         "focus:outline-none focus:bg-green-50 focus:text-green-700",
         isSelected && "bg-green-100 text-green-700 border-2 border-green-300 font-bold",
@@ -125,7 +125,7 @@ export const MobileSelectItem = ({ value, children, className }: MobileSelectIte
       }}
     >
       <span>{children}</span>
-      {isSelected && <Check className="w-5 h-5 text-green-600" />}
+      {isSelected && <Check className="w-3 h-3 text-green-600" />}
     </button>
   )
 }
@@ -135,7 +135,7 @@ export const MobileSelectValue = ({ placeholder }: { placeholder?: string }) => 
   
   return (
     <span className={cn(
-      "mobile-select-placeholder",
+      "mobile-select-placeholder text-sm",
       value ? "text-gray-900" : "text-gray-500"
     )}>
       {value || placeholder}

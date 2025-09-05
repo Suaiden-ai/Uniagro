@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MobileSelect, MobileSelectContent, MobileSelectItem, MobileSelectTrigger, MobileSelectValue } from '@/components/ui/mobile-select';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { ArrowLeft, ArrowRight, Save, CheckSquare } from 'lucide-react';
 
 interface RendaData {
@@ -34,6 +36,7 @@ interface RendaStepProps {
 export const RendaStep = ({ data, onNext, onPrevious, onSave, onFinish, isFirst, isLast }: RendaStepProps) => {
   console.log('🔍 RENDA STEP - Dados recebidos como props:', data);
   
+  const isMobile = useIsMobile();
   const [formData, setFormData] = useState<RendaData>({
     profissao1: data.profissao1 || '',
     rendaProfissao1: data.rendaProfissao1 || 0,
@@ -60,6 +63,56 @@ export const RendaStep = ({ data, onNext, onPrevious, onSave, onFinish, isFirst,
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
+  };
+
+  const renderSelect = (field: keyof RendaData, options: Array<{value: string, label: string}>, placeholder: string, value: string) => {
+    if (isMobile) {
+      return (
+        <MobileSelect value={value} onValueChange={(newValue) => {
+          if (field === 'possuiFinanciamentoAtivo') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'temVeiculo') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'casaPropria') {
+            updateFormData(field, newValue === 'sim');
+          }
+        }}>
+          <MobileSelectTrigger>
+            <MobileSelectValue placeholder={placeholder} />
+          </MobileSelectTrigger>
+          <MobileSelectContent>
+            {options.map((option) => (
+              <MobileSelectItem key={option.value} value={option.value}>
+                {option.label}
+              </MobileSelectItem>
+            ))}
+          </MobileSelectContent>
+        </MobileSelect>
+      );
+    }
+
+    return (
+      <Select value={value} onValueChange={(newValue) => {
+        if (field === 'possuiFinanciamentoAtivo') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'temVeiculo') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'casaPropria') {
+          updateFormData(field, newValue === 'sim');
+        }
+      }}>
+        <SelectTrigger className="mobile-select-trigger mt-2 h-12">
+          <SelectValue placeholder={placeholder} className="mobile-select-placeholder" />
+        </SelectTrigger>
+        <SelectContent className="mobile-select-content">
+          {options.map((option) => (
+            <SelectItem key={option.value} value={option.value} className="mobile-select-item">
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
   };
 
   const calculateRendaTotal = () => {
@@ -237,18 +290,15 @@ export const RendaStep = ({ data, onNext, onPrevious, onSave, onFinish, isFirst,
           
           <div>
             <Label className="text-base font-semibold">Possui financiamento ativo?</Label>
-            <Select
-              value={formData.possuiFinanciamentoAtivo ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('possuiFinanciamentoAtivo', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'possuiFinanciamentoAtivo',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.possuiFinanciamentoAtivo ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.possuiFinanciamentoAtivo && (
@@ -273,18 +323,15 @@ export const RendaStep = ({ data, onNext, onPrevious, onSave, onFinish, isFirst,
           
           <div>
             <Label className="text-base font-semibold">Tem veículo?</Label>
-            <Select
-              value={formData.temVeiculo ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('temVeiculo', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'temVeiculo',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.temVeiculo ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.temVeiculo && (
@@ -309,18 +356,15 @@ export const RendaStep = ({ data, onNext, onPrevious, onSave, onFinish, isFirst,
           
           <div>
             <Label className="text-base font-semibold">Casa própria fora da propriedade?</Label>
-            <Select
-              value={formData.casaPropria ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('casaPropria', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'casaPropria',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.casaPropria ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.casaPropria && (

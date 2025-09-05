@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MobileSelect, MobileSelectContent, MobileSelectItem, MobileSelectTrigger, MobileSelectValue } from '@/components/ui/mobile-select';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
 
 interface SaudeData {
@@ -26,6 +28,7 @@ interface SaudeStepProps {
 }
 
 export const SaudeStep = ({ data, onNext, onPrevious, onSave, isFirst }: SaudeStepProps) => {
+  const isMobile = useIsMobile();
   const [formData, setFormData] = useState<SaudeData>({
     temDeficiencia: data.temDeficiencia || false,
     qualDeficiencia: data.qualDeficiencia || '',
@@ -45,6 +48,60 @@ export const SaudeStep = ({ data, onNext, onPrevious, onSave, isFirst }: SaudeSt
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
+  };
+
+  const renderSelect = (field: keyof SaudeData, options: Array<{value: string, label: string}>, placeholder: string, value: string) => {
+    if (isMobile) {
+      return (
+        <MobileSelect value={value} onValueChange={(newValue) => {
+          if (field === 'temDeficiencia') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'temCromoidade') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'fazTratamento') {
+            updateFormData(field, newValue === 'sim');
+          } else if (field === 'tomaMedicacaoControlada') {
+            updateFormData(field, newValue === 'sim');
+          }
+        }}>
+          <MobileSelectTrigger>
+            <MobileSelectValue placeholder={placeholder} />
+          </MobileSelectTrigger>
+          <MobileSelectContent>
+            {options.map((option) => (
+              <MobileSelectItem key={option.value} value={option.value}>
+                {option.label}
+              </MobileSelectItem>
+            ))}
+          </MobileSelectContent>
+        </MobileSelect>
+      );
+    }
+
+    return (
+      <Select value={value} onValueChange={(newValue) => {
+        if (field === 'temDeficiencia') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'temCromoidade') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'fazTratamento') {
+          updateFormData(field, newValue === 'sim');
+        } else if (field === 'tomaMedicacaoControlada') {
+          updateFormData(field, newValue === 'sim');
+        }
+      }}>
+        <SelectTrigger className="mobile-select-trigger mt-2 h-12">
+          <SelectValue placeholder={placeholder} className="mobile-select-placeholder" />
+        </SelectTrigger>
+        <SelectContent className="mobile-select-content">
+          {options.map((option) => (
+            <SelectItem key={option.value} value={option.value} className="mobile-select-item">
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
   };
 
   const validateForm = (): boolean => {
@@ -93,18 +150,15 @@ export const SaudeStep = ({ data, onNext, onPrevious, onSave, isFirst }: SaudeSt
           
           <div>
             <Label className="text-base font-semibold">Possui deficiência?</Label>
-            <Select
-              value={formData.temDeficiencia ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('temDeficiencia', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'temDeficiencia',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.temDeficiencia ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.temDeficiencia && (
@@ -130,18 +184,15 @@ export const SaudeStep = ({ data, onNext, onPrevious, onSave, isFirst }: SaudeSt
           
           <div>
             <Label className="text-base font-semibold">Possui cromoidade?</Label>
-            <Select
-              value={formData.temCromoidade ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('temCromoidade', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'temCromoidade',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.temCromoidade ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.temCromoidade && (
@@ -167,18 +218,15 @@ export const SaudeStep = ({ data, onNext, onPrevious, onSave, isFirst }: SaudeSt
           
           <div>
             <Label className="text-base font-semibold">Faz tratamento?</Label>
-            <Select
-              value={formData.fazTratamento ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('fazTratamento', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'fazTratamento',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.fazTratamento ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.fazTratamento && (
@@ -204,18 +252,15 @@ export const SaudeStep = ({ data, onNext, onPrevious, onSave, isFirst }: SaudeSt
           
           <div>
             <Label className="text-base font-semibold">Toma medicação controlada?</Label>
-            <Select
-              value={formData.tomaMedicacaoControlada ? 'sim' : 'nao'}
-              onValueChange={(value) => updateFormData('tomaMedicacaoControlada', value === 'sim')}
-            >
-              <SelectTrigger className="mt-2 h-12">
-                <SelectValue placeholder="Selecione uma opção" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">Sim</SelectItem>
-                <SelectItem value="nao">Não</SelectItem>
-              </SelectContent>
-            </Select>
+            {renderSelect(
+              'tomaMedicacaoControlada',
+              [
+                { value: 'sim', label: 'Sim' },
+                { value: 'nao', label: 'Não' }
+              ],
+              'Selecione uma opção',
+              formData.tomaMedicacaoControlada ? 'sim' : 'nao'
+            )}
           </div>
 
           {formData.tomaMedicacaoControlada && (
