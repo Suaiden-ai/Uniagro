@@ -1,14 +1,10 @@
-import { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import Login from '@/components/Login';
+import { useUserAuth } from '@/contexts/UserAuthContext';
 import Dashboard from './Dashboard';
 import { Button } from '@/components/ui/button';
 import { LogOut, User } from 'lucide-react';
 
 const AdminPanel = () => {
-  const { isAuthenticated, user, login, logout, loading } = useAuth();
-  const [loginError, setLoginError] = useState('');
-  const [loginLoading, setLoginLoading] = useState(false);
+  const { user, profile, signOut, loading } = useUserAuth();
 
   // Mostrar loading enquanto verifica autenticação
   if (loading) {
@@ -22,47 +18,13 @@ const AdminPanel = () => {
     );
   }
 
-  const handleLogin = async (credentials: { email: string; password: string }) => {
-    setLoginLoading(true);
-    setLoginError('');
-    
+  const handleLogout = async () => {
     try {
-      const success = await login(credentials);
-      if (!success) {
-        setLoginError('Email ou senha incorretos');
-      }
+      await signOut();
     } catch (error) {
-      setLoginError('Erro ao fazer login. Tente novamente.');
-    } finally {
-      setLoginLoading(false);
+      console.error('Erro ao fazer logout:', error);
     }
   };
-
-  const handleLogout = () => {
-    logout();
-  };
-
-  // Loading durante verificação inicial
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Verificando autenticação...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <Login 
-        onLogin={handleLogin}
-        error={loginError}
-        loading={loginLoading}
-      />
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -76,8 +38,8 @@ const AdminPanel = () => {
             <div className="flex items-center gap-3 text-sm text-gray-600">
               <User className="w-4 h-4" />
               <div className="text-right">
-                <p className="font-medium">{user?.name}</p>
-                <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+                <p className="font-medium">{profile?.name}</p>
+                <p className="text-xs text-gray-500 capitalize">{profile?.role}</p>
               </div>
             </div>
             <Button

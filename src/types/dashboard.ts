@@ -52,22 +52,30 @@ export interface DashboardMetrics {
 }
 
 export interface Registration {
-  id_linha: number;
-  uuid_usuario: string;
+  id: number | string;
+  source: 'cadastro_inicial' | 'questionario_multistep';
+  uuid_usuario?: string;
   timestamp_cadastro: string;
   nome_completo: string;
-  cpf: string;
-  telefone: string;
-  cep: string;
-  logradouro: string;
-  numero: string;
+  cpf?: string;
+  documentacao_cpf?: string;
+  telefone?: string;
+  cep?: string;
+  logradouro?: string;
+  numero?: string;
   complemento?: string;
-  bairro: string;
-  localidade: string;
-  estado: string;
-  estado_civil: string;
-  qtd_filhos: number;
-  sexo: string;
+  bairro?: string;
+  localidade?: string;
+  estado?: string;
+  estado_civil?: string;
+  qtd_filhos?: number;
+  sexo?: string;
+  // Campos específicos do questionario_multistep
+  status_completo?: boolean;
+  etapas_completas?: number;
+  total_etapas?: number;
+  // Campos específicos do cadastro_inicial
+  id_linha?: number;
 }
 
 export interface DateRange {

@@ -96,6 +96,12 @@ export const validateToken = async (): Promise<AdminUser | null> => {
       return null;
     }
 
+    // Verificar se o usuário tem role de admin
+    const isAdminRole = adminUser.role && ['admin', 'gestor', 'analista'].includes(adminUser.role);
+    if (!isAdminRole) {
+      return null;
+    }
+
     return adminUser;
   } catch (error) {
     console.error('Erro na validação do token:', error);
